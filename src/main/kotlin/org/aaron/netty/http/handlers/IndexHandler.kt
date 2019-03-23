@@ -3,7 +3,7 @@ package org.aaron.netty.http.handlers
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
 import mu.KLogging
-import org.aaron.netty.http.sendAndCleanupConnection
+import org.aaron.netty.http.sendResponseAndCleanupConnection
 import org.aaron.netty.http.writeStringBuffer
 
 class IndexHandler : Handler {
@@ -23,7 +23,7 @@ class IndexHandler : Handler {
 
         response.content().writeStringBuffer(htmlBuffer)
 
-        ctx.sendAndCleanupConnection(response, keepAlive)
+        ctx.sendResponseAndCleanupConnection(response, keepAlive)
     }
 
 }

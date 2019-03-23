@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
 import io.netty.util.CharsetUtil
 
-fun ChannelHandlerContext.sendAndCleanupConnection(
+fun ChannelHandlerContext.sendResponseAndCleanupConnection(
         response: FullHttpResponse,
         keepAlive: Boolean) {
 
@@ -31,7 +31,7 @@ fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
             HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer("Failure: $status\r\n", CharsetUtil.UTF_8))
     response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
 
-    sendAndCleanupConnection(response, false)
+    sendResponseAndCleanupConnection(response, false)
 }
 
 fun ByteBuf.writeStringBuffer(stringBuffer: StringBuffer) {
