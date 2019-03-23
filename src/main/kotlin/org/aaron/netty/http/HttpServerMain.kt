@@ -64,7 +64,7 @@ class HttpServerMain {
             val b = ServerBootstrap()
             b.group(bossGroup, workerGroup)
                     .channel(serverSocketChannelClass().java)
-                    .handler(LoggingHandler(LogLevel.INFO))
+                    .handler(LoggingHandler(LogLevel.DEBUG))
                     .childHandler(HttpServerInitializer(sslCtx))
 
             val ch = b.bind(PORT).sync().channel()

@@ -85,6 +85,7 @@ class HttpServerHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
         val keepAlive = HttpUtil.isKeepAlive(request)
         val uri = request.uri()
         val path = sanitizeUri(uri)
+        logger.info { "uri = $uri path = $path" }
         if (path == null) {
             sendError(ctx, HttpResponseStatus.FORBIDDEN)
             return
