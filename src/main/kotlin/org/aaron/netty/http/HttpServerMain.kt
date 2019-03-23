@@ -25,7 +25,7 @@ class HttpServerMain {
     companion object : KLogging()
 
     private val SSL = System.getProperty("ssl") != null
-    private val PORT = Integer.parseInt(System.getProperty("port", if (SSL) "8443" else "8080"))
+    private val PORT = System.getProperty("port", if (SSL) "8443" else "8080").toInt()
 
     private fun createEventLoopGroup(threads: Int = 0): MultithreadEventLoopGroup =
             when {
