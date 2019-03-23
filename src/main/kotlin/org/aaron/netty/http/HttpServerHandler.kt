@@ -1,16 +1,15 @@
 package org.aaron.netty.http
 
 import io.netty.buffer.Unpooled
-import io.netty.channel.*
+import io.netty.channel.ChannelFutureListener
+import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.http.*
-import io.netty.handler.ssl.SslHandler
-import io.netty.handler.stream.ChunkedFile
 import io.netty.util.CharsetUtil
 import io.netty.util.internal.SystemPropertyUtil
 import mu.KLogging
+import org.aaron.netty.http.handlers.HandlerMap
 import java.io.File
-import java.io.FileNotFoundException
-import java.io.RandomAccessFile
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import java.text.SimpleDateFormat
@@ -66,7 +65,8 @@ import javax.activation.MimetypesFileTypeMap
  *
 </pre> *
  */
-class HttpServerHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
+class HttpServerHandler(
+        private val handlerMap: HandlerMap) : SimpleChannelInboundHandler<FullHttpRequest>() {
 
     @Throws(Exception::class)
     public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
@@ -84,104 +84,112 @@ class HttpServerHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
 
         val keepAlive = HttpUtil.isKeepAlive(request)
         val uri = request.uri()
-        val path = sanitizeUri(uri)
-        logger.info { "uri = $uri path = $path" }
-        if (path == null) {
-            sendError(ctx, HttpResponseStatus.FORBIDDEN)
-            return
-        }
 
-        val file = File(path)
-        if (file.isHidden || !file.exists()) {
+        val handler = handlerMap.get(uri)
+        if (handler == null) {
             sendError(ctx, HttpResponseStatus.NOT_FOUND)
-            return
-        }
-
-        if (file.isDirectory) {
-            if (uri.endsWith("/")) {
-                sendListing(ctx, file, uri, keepAlive)
-            } else {
-                sendRedirect(ctx, "$uri/", keepAlive)
-            }
-            return
-        }
-
-        if (!file.isFile) {
-            sendError(ctx, HttpResponseStatus.FORBIDDEN)
-            return
-        }
-
-        // Cache Validation
-        val ifModifiedSince = request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE)
-        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
-            val dateFormatter = SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US)
-            val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
-
-            // Only compare up to the second because the datetime format we send to the client
-            // does not have milliseconds
-            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.time / 1000
-            val fileLastModifiedSeconds = file.lastModified() / 1000
-            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
-                sendNotModified(ctx, keepAlive)
-                return
-            }
-        }
-
-        val raf: RandomAccessFile
-        try {
-            raf = RandomAccessFile(file, "r")
-        } catch (ignore: FileNotFoundException) {
-            sendError(ctx, HttpResponseStatus.NOT_FOUND)
-            return
-        }
-
-        val fileLength = raf.length()
-
-        val response = DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
-        HttpUtil.setContentLength(response, fileLength)
-        setContentTypeHeader(response, file)
-        setDateAndCacheHeaders(response, file)
-
-        if (!keepAlive) {
-            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
-        }
-
-        // Write the initial line and the header.
-        ctx.write(response)
-
-        // Write the content.
-        val sendFileFuture: ChannelFuture
-        val lastContentFuture: ChannelFuture
-        if (ctx.pipeline().get(SslHandler::class.java) == null) {
-            sendFileFuture = ctx.write(DefaultFileRegion(raf.channel, 0, fileLength), ctx.newProgressivePromise())
-            // Write the end marker.
-            lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
         } else {
-            sendFileFuture = ctx.writeAndFlush(HttpChunkedInput(ChunkedFile(raf, 0, fileLength, 8192)),
-                    ctx.newProgressivePromise())
-            // HttpChunkedInput will write the end marker (LastHttpContent) for us.
-            lastContentFuture = sendFileFuture
+            handler.handle(ctx, request, keepAlive)
         }
 
-        sendFileFuture.addListener(object : ChannelProgressiveFutureListener {
-            override fun operationProgressed(future: ChannelProgressiveFuture, progress: Long, total: Long) {
-                if (total < 0) { // total unknown
-                    System.err.println(future.channel().toString() + " Transfer progress: " + progress)
-                } else {
-                    System.err.println(future.channel().toString() + " Transfer progress: " + progress + " / " + total)
-                }
-            }
 
-            override fun operationComplete(future: ChannelProgressiveFuture) {
-                System.err.println(future.channel().toString() + " Transfer complete.")
-            }
-        })
-
-        // Decide whether to close the connection or not.
-        if (!keepAlive) {
-            // Close the connection when the whole content is written out.
-            lastContentFuture.addListener(ChannelFutureListener.CLOSE)
-        }
+//        logger.info { "uri = $uri path = $path" }
+//        if (path == null) {
+//            sendError(ctx, HttpResponseStatus.FORBIDDEN)
+//            return
+//        }
+//
+//        val file = File(path)
+//        if (file.isHidden || !file.exists()) {
+//            sendError(ctx, HttpResponseStatus.NOT_FOUND)
+//            return
+//        }
+//
+//        if (file.isDirectory) {
+//            if (uri.endsWith("/")) {
+//                sendListing(ctx, file, uri, keepAlive)
+//            } else {
+//                sendRedirect(ctx, "$uri/", keepAlive)
+//            }
+//            return
+//        }
+//
+//        if (!file.isFile) {
+//            sendError(ctx, HttpResponseStatus.FORBIDDEN)
+//            return
+//        }
+//
+//        // Cache Validation
+//        val ifModifiedSince = request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE)
+//        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
+//            val dateFormatter = SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US)
+//            val ifModifiedSinceDate = dateFormatter.parse(ifModifiedSince)
+//
+//            // Only compare up to the second because the datetime format we send to the client
+//            // does not have milliseconds
+//            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.time / 1000
+//            val fileLastModifiedSeconds = file.lastModified() / 1000
+//            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
+//                sendNotModified(ctx, keepAlive)
+//                return
+//            }
+//        }
+//
+//        val raf: RandomAccessFile
+//        try {
+//            raf = RandomAccessFile(file, "r")
+//        } catch (ignore: FileNotFoundException) {
+//            sendError(ctx, HttpResponseStatus.NOT_FOUND)
+//            return
+//        }
+//
+//        val fileLength = raf.length()
+//
+//        val response = DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
+//        HttpUtil.setContentLength(response, fileLength)
+//        setContentTypeHeader(response, file)
+//        setDateAndCacheHeaders(response, file)
+//
+//        if (!keepAlive) {
+//            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+//        }
+//
+//        // Write the initial line and the header.
+//        ctx.write(response)
+//
+//        // Write the content.
+//        val sendFileFuture: ChannelFuture
+//        val lastContentFuture: ChannelFuture
+//        if (ctx.pipeline().get(SslHandler::class.java) == null) {
+//            sendFileFuture = ctx.write(DefaultFileRegion(raf.channel, 0, fileLength), ctx.newProgressivePromise())
+//            // Write the end marker.
+//            lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
+//        } else {
+//            sendFileFuture = ctx.writeAndFlush(HttpChunkedInput(ChunkedFile(raf, 0, fileLength, 8192)),
+//                    ctx.newProgressivePromise())
+//            // HttpChunkedInput will write the end marker (LastHttpContent) for us.
+//            lastContentFuture = sendFileFuture
+//        }
+//
+//        sendFileFuture.addListener(object : ChannelProgressiveFutureListener {
+//            override fun operationProgressed(future: ChannelProgressiveFuture, progress: Long, total: Long) {
+//                if (total < 0) { // total unknown
+//                    System.err.println(future.channel().toString() + " Transfer progress: " + progress)
+//                } else {
+//                    System.err.println(future.channel().toString() + " Transfer progress: " + progress + " / " + total)
+//                }
+//            }
+//
+//            override fun operationComplete(future: ChannelProgressiveFuture) {
+//                System.err.println(future.channel().toString() + " Transfer complete.")
+//            }
+//        })
+//
+//        // Decide whether to close the connection or not.
+//        if (!keepAlive) {
+//            // Close the connection when the whole content is written out.
+//            lastContentFuture.addListener(ChannelFutureListener.CLOSE)
+//        }
     }
 
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {

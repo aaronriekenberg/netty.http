@@ -6,8 +6,11 @@ import io.netty.handler.codec.http.HttpObjectAggregator
 import io.netty.handler.codec.http.HttpServerCodec
 import io.netty.handler.ssl.SslContext
 import io.netty.handler.stream.ChunkedWriteHandler
+import org.aaron.netty.http.handlers.HandlerMap
 
-class HttpServerInitializer(private val sslCtx: SslContext?) : ChannelInitializer<SocketChannel>() {
+class HttpServerInitializer(
+        private val sslCtx: SslContext?,
+        private val handlerMap: HandlerMap) : ChannelInitializer<SocketChannel>() {
 
     public override fun initChannel(ch: SocketChannel) {
         val pipeline = ch.pipeline()
@@ -17,7 +20,7 @@ class HttpServerInitializer(private val sslCtx: SslContext?) : ChannelInitialize
         pipeline.addLast(HttpServerCodec())
         pipeline.addLast(HttpObjectAggregator(MAX_CONTENT_LENGTH))
         pipeline.addLast(ChunkedWriteHandler())
-        pipeline.addLast(HttpServerHandler())
+        pipeline.addLast(HttpServerHandler(handlerMap))
     }
 
     companion object {

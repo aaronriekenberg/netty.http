@@ -18,6 +18,7 @@ import io.netty.handler.ssl.SslContextBuilder
 import io.netty.handler.ssl.SslProvider
 import io.netty.handler.ssl.util.SelfSignedCertificate
 import mu.KLogging
+import org.aaron.netty.http.handlers.IndexHandler
 import kotlin.reflect.KClass
 
 class HttpServerMain {
@@ -54,6 +55,10 @@ class HttpServerMain {
             sslCtx = null
         }
 
+        val handlerMap = mapOf(
+                "/" to IndexHandler()
+        )
+
         val bossGroup = createEventLoopGroup(1)
         val workerGroup = createEventLoopGroup()
 
@@ -65,7 +70,7 @@ class HttpServerMain {
             b.group(bossGroup, workerGroup)
                     .channel(serverSocketChannelClass().java)
                     .handler(LoggingHandler(LogLevel.DEBUG))
-                    .childHandler(HttpServerInitializer(sslCtx))
+                    .childHandler(HttpServerInitializer(sslCtx, handlerMap))
 
             val ch = b.bind(PORT).sync().channel()
 
