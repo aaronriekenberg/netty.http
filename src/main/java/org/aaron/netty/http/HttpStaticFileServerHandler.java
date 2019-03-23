@@ -88,7 +88,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HttpStaticFileServer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpStaticFileServerHandler.class);
 
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
