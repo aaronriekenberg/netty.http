@@ -87,7 +87,7 @@ class HttpServerHandler(
 
         val handler = handlerMap.get(uri)
         if (handler == null) {
-            sendError(ctx, HttpResponseStatus.NOT_FOUND)
+            ctx.sendError(HttpResponseStatus.NOT_FOUND)
         } else {
             handler.handle(ctx, request, keepAlive)
         }
