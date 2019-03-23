@@ -9,16 +9,18 @@ import io.netty.handler.stream.ChunkedWriteHandler
 
 class HttpServerInitializer(private val sslCtx: SslContext?) : ChannelInitializer<SocketChannel>() {
 
-    private val maxContentLength = 65_536
-
     public override fun initChannel(ch: SocketChannel) {
         val pipeline = ch.pipeline()
         if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()))
         }
         pipeline.addLast(HttpServerCodec())
-        pipeline.addLast(HttpObjectAggregator(maxContentLength))
+        pipeline.addLast(HttpObjectAggregator(MAX_CONTENT_LENGTH))
         pipeline.addLast(ChunkedWriteHandler())
-        pipeline.addLast(HttpStaticFileServerHandler())
+        pipeline.addLast(HttpServerHandler())
+    }
+
+    companion object {
+        private const val MAX_CONTENT_LENGTH = 65_536
     }
 }
