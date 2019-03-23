@@ -1,5 +1,6 @@
 package org.aaron.netty.http
 
+import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
@@ -31,4 +32,13 @@ fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
     response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
 
     sendAndCleanupConnection(response, false)
+}
+
+fun ByteBuf.writeStringBuffer(stringBuffer: StringBuffer) {
+    val buffer = Unpooled.copiedBuffer(stringBuffer, CharsetUtil.UTF_8)
+    try {
+        writeBytes(buffer)
+    } finally {
+        buffer.release()
+    }
 }
