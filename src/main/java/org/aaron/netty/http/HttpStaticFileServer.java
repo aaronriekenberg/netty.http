@@ -16,6 +16,8 @@
 package org.aaron.netty.http;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -40,23 +42,23 @@ public final class HttpStaticFileServer {
         // Configure SSL.
         final SslContext sslCtx;
         if (SSL) {
-            final var ssc = new SelfSignedCertificate();
+            final SelfSignedCertificate ssc = new SelfSignedCertificate();
             sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
                     .sslProvider(SslProvider.JDK).build();
         } else {
             sslCtx = null;
         }
 
-        final var bossGroup = new NioEventLoopGroup(1);
-        final var workerGroup = new NioEventLoopGroup();
+        final MultithreadEventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        final MultithreadEventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            final var b = new ServerBootstrap();
+            final ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new HttpStaticFileServerInitializer(sslCtx));
 
-            final var ch = b.bind(PORT).sync().channel();
+            final Channel ch = b.bind(PORT).sync().channel();
 
             LOG.info("Open your web browser and navigate to " +
                     (SSL ? "https" : "http") + "://127.0.0.1:" + PORT + '/');

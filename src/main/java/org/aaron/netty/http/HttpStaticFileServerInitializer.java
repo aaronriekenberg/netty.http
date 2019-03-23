@@ -16,6 +16,7 @@
 package org.aaron.netty.http;
 
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
@@ -32,7 +33,7 @@ public class HttpStaticFileServerInitializer extends ChannelInitializer<SocketCh
 
     @Override
     public void initChannel(SocketChannel ch) {
-        final var pipeline = ch.pipeline();
+        final ChannelPipeline pipeline = ch.pipeline();
         if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }

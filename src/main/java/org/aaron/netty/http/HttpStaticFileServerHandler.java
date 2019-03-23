@@ -15,6 +15,7 @@
  */
 package org.aaron.netty.http;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
@@ -252,10 +253,10 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-\\._]?[^<>&\\\"]*");
 
     private static void sendListing(ChannelHandlerContext ctx, File dir, String dirPath, boolean keepAlive) {
-        final var response = new DefaultFullHttpResponse(HTTP_1_1, OK);
+        final DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK);
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=UTF-8");
 
-        final var buf = new StringBuilder()
+        final StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
                 .append("<html><head><meta charset='utf-8' /><title>")
                 .append("Listing of: ")
@@ -287,7 +288,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
         }
 
         buf.append("</ul></body></html>\r\n");
-        final var buffer = Unpooled.copiedBuffer(buf, CharsetUtil.UTF_8);
+        final ByteBuf buffer = Unpooled.copiedBuffer(buf, CharsetUtil.UTF_8);
         response.content().writeBytes(buffer);
         buffer.release();
 
@@ -295,14 +296,14 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
     }
 
     private static void sendRedirect(ChannelHandlerContext ctx, String newUri, boolean keepAlive) {
-        final var response = new DefaultFullHttpResponse(HTTP_1_1, FOUND);
+        final DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, FOUND);
         response.headers().set(HttpHeaderNames.LOCATION, newUri);
 
         sendAndCleanupConnection(ctx, response, keepAlive);
     }
 
     private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-        final var response = new DefaultFullHttpResponse(
+        final DefaultFullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
@@ -315,7 +316,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
      * @param ctx Context
      */
     private static void sendNotModified(ChannelHandlerContext ctx, boolean keepAlive) {
-        final var response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
+        final DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_MODIFIED);
         setDateHeader(response);
 
         sendAndCleanupConnection(ctx, response, keepAlive);
@@ -334,7 +335,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         }
 
-        final var flushPromise = ctx.writeAndFlush(response);
+        final ChannelFuture flushPromise = ctx.writeAndFlush(response);
 
         if (!keepAlive) {
             // Close the connection as soon as the response is sent.
@@ -348,10 +349,10 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
      * @param response HTTP response
      */
     private static void setDateHeader(FullHttpResponse response) {
-        final var dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+        final SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
         dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
 
-        final var time = new GregorianCalendar();
+        final Calendar time = new GregorianCalendar();
         response.headers().set(HttpHeaderNames.DATE, dateFormatter.format(time.getTime()));
     }
 
@@ -362,11 +363,11 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
      * @param fileToCache file to extract content type
      */
     private static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
-        final var dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+        final SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
         dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
 
         // Date header
-        final var time = new GregorianCalendar();
+        final Calendar time = new GregorianCalendar();
         response.headers().set(HttpHeaderNames.DATE, dateFormatter.format(time.getTime()));
 
         // Add cache headers
@@ -384,7 +385,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
      * @param file     file to extract content type
      */
     private static void setContentTypeHeader(HttpResponse response, File file) {
-        final var mimeTypesMap = new MimetypesFileTypeMap();
+        final MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, mimeTypesMap.getContentType(file.getPath()));
     }
 }
