@@ -28,14 +28,24 @@ fun ChannelHandlerContext.sendResponseAndCleanupConnection(
 
 fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
     val response = DefaultFullHttpResponse(
-            HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer("Failure: $status\r\n", CharsetUtil.UTF_8))
+            HttpVersion.HTTP_1_1, status)
     response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
+    response.content().writeString("Failure: $status\r\n")
 
     sendResponseAndCleanupConnection(response, false)
 }
 
 fun ByteBuf.writeStringBuffer(stringBuffer: StringBuffer) {
     val buffer = Unpooled.copiedBuffer(stringBuffer, CharsetUtil.UTF_8)
+    try {
+        writeBytes(buffer)
+    } finally {
+        buffer.release()
+    }
+}
+
+fun ByteBuf.writeString(string: String) {
+    val buffer = Unpooled.copiedBuffer(string, CharsetUtil.UTF_8)
     try {
         writeBytes(buffer)
     } finally {
