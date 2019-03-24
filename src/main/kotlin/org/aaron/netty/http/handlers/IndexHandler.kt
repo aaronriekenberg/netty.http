@@ -45,6 +45,7 @@ class IndexHandler : Handler {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader("text/html; charset=UTF-8")
+        response.setDateHeader()
         response.setLastModifiedHeader(Date(lastModified.toEpochMilli()))
         response.setCacheControlHeader()
 

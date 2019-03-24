@@ -93,7 +93,7 @@ class StaticFileHandler(
             // Write the end marker.
             lastContentFuture = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT)
         } else {
-            sendFileFuture = ctx.writeAndFlush(HttpChunkedInput(ChunkedFile(raf, 0, fileLength, 8_192)),
+            sendFileFuture = ctx.writeAndFlush(HttpChunkedInput(ChunkedFile(raf, 0, fileLength, CHUNK_SIZE)),
                     ctx.newProgressivePromise())
             // HttpChunkedInput will write the end marker (LastHttpContent) for us.
             lastContentFuture = sendFileFuture
@@ -117,6 +117,6 @@ class StaticFileHandler(
     }
 
     companion object : KLogging() {
-        private const val HTTP_CACHE_SECONDS = 60
+        private const val CHUNK_SIZE = 8_192
     }
 }
