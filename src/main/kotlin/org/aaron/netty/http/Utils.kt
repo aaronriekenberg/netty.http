@@ -72,4 +72,4 @@ private val HTTP_DATE_FORMATTER = object : ThreadLocal<SimpleDateFormat>() {
     }
 }
 
-fun formatHttpDate(instant: Instant) = HTTP_DATE_FORMATTER.get().format(Date(instant.toEpochMilli()))
+fun formatHttpDate(instant: Instant) = HTTP_DATE_FORMATTER.get().format(Date(instant.toEpochMilli()))!!
