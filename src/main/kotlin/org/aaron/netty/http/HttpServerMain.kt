@@ -16,10 +16,7 @@ import io.netty.handler.logging.LoggingHandler
 import mu.KLogging
 import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
-import org.aaron.netty.http.handlers.Handler
-import org.aaron.netty.http.handlers.HandlerMap
-import org.aaron.netty.http.handlers.IndexHandler
-import org.aaron.netty.http.handlers.StaticFileHandler
+import org.aaron.netty.http.handlers.*
 import kotlin.reflect.KClass
 
 class HttpServerMain {
@@ -50,6 +47,19 @@ class HttpServerMain {
                     filePath = it.filePath,
                     classpath = it.classpath,
                     contentType = it.contentType
+            )
+        }
+
+
+        config.commandInfo.forEach {
+            val htmlPath = "/commands/${it.id}"
+            handlerMap[htmlPath] = CommandHTMLHandler(
+                    commandInfo = it
+            )
+
+            val apiPath = "/api/commands/${it.id}"
+            handlerMap[apiPath] = CommandAPIHandler(
+                    commandInfo = it
             )
         }
 

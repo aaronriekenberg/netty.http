@@ -8,10 +8,32 @@
   },
   "static_file_info": [
     {
+      "url": "/command.js",
+      "file_path": "/static/command.js",
+      "classpath": true,
+      "content_type": "application/javascript"
+    },
+    {
       "url": "/style.css",
       "file_path": "/static/style.css",
       "classpath": true,
       "content_type": "text/css"
+    }
+  ],
+  "command_info": [
+    {
+      "id": "ifconfig",
+      "description": "ifconfig",
+      "command": "ifconfig",
+      "args": [
+        "-a"
+      ]
+    },
+    {
+      "id": "ls",
+      "description": "ls",
+      "command": "ls",
+      "args": []
     }
   ]
 }

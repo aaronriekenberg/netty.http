@@ -32,6 +32,20 @@ data class StaticFileInfo(
         val contentType: String
 )
 
+data class CommandInfo(
+        @JsonProperty("id")
+        val id: String,
+
+        @JsonProperty("description")
+        val description: String,
+
+        @JsonProperty("command")
+        val command: String,
+
+        @JsonProperty("args")
+        val args: List<String>
+)
+
 data class Config(
         @JsonProperty("server_info")
         val serverInfo: ServerInfo,
@@ -40,7 +54,10 @@ data class Config(
         val mainPageInfo: MainPageInfo,
 
         @JsonProperty("static_file_info")
-        val staticFileInfo: List<StaticFileInfo>
+        val staticFileInfo: List<StaticFileInfo>,
+
+        @JsonProperty("command_info")
+        val commandInfo: List<CommandInfo>
 )
 
 

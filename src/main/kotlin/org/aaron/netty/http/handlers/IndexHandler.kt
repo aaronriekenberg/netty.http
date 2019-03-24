@@ -3,6 +3,7 @@ package org.aaron.netty.http.handlers
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.*
+import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.config.MainPageInfo
 import org.aaron.netty.http.templates.HandlebarsContainer
@@ -13,6 +14,7 @@ import java.util.*
 
 private data class IndexTemplateData(
         val mainPageInfo: MainPageInfo,
+        val commandInfo: List<CommandInfo>,
         val lastModified: String
 )
 
@@ -33,6 +35,7 @@ class IndexHandler : Handler {
 
         val indexTemplateData = IndexTemplateData(
                 mainPageInfo = ConfigContainer.config.mainPageInfo,
+                commandInfo = ConfigContainer.config.commandInfo,
                 lastModified = OffsetDateTime.ofInstant(lastModified, ZoneId.systemDefault()).toString()
         )
 
