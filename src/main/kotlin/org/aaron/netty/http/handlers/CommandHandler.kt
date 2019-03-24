@@ -26,7 +26,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
     private val lastModified: Instant
 
     init {
-        IndexHandler.logger.info { "begin init" }
+        logger.info { "begin init" }
 
         val commandTemplate = HandlebarsContainer.handlebars.compile("command")
 
@@ -38,7 +38,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
         htmlString = commandTemplate.apply(commandTemplateData)
 
-        IndexHandler.logger.info { "end init" }
+        logger.info { "end init" }
     }
 
     override fun handle(requestContext: RequestContext) {
