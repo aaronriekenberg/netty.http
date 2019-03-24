@@ -14,8 +14,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import mu.KLogging
+import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
+import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.HandlerMap
 import org.aaron.netty.http.handlers.IndexHandler
+import org.aaron.netty.http.handlers.StaticFileHandler
 import kotlin.reflect.KClass
 
 class HttpServerMain {
@@ -36,19 +40,34 @@ class HttpServerMain {
                 else -> NioServerSocketChannel::class
             }
 
+    private fun handlerMap(config: Config): HandlerMap {
+        val handlerMap: MutableMap<String, Handler> = mutableMapOf(
+                "/" to IndexHandler()
+        )
+
+        config.staticFileInfo.forEach {
+            handlerMap[it.url] = StaticFileHandler(
+                    filePath = it.filePath,
+                    classpath = it.classpath,
+                    contentType = it.contentType
+            )
+        }
+
+        return handlerMap
+    }
+
     fun run() {
         val config = ConfigContainer.config
         logger.info { "begin run config = $config" }
 
-        val handlerMap = mapOf(
-                "/" to IndexHandler()
-        )
+        val handlerMap = handlerMap(config)
 
         val bossGroup = createEventLoopGroup(1)
         val workerGroup = createEventLoopGroup()
 
         logger.info { "bossGroup=${bossGroup.javaClass.simpleName} executorCount=${bossGroup.executorCount()}" }
         logger.info { "workerGroup=${workerGroup.javaClass.simpleName} executorCount=${workerGroup.executorCount()}" }
+        logger.info { "handlerMap.size=${handlerMap.size}" }
 
         try {
             val b = ServerBootstrap()

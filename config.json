@@ -5,5 +5,13 @@
   },
   "main_page_info": {
     "title": "Hello World"
-  }
+  },
+  "static_file_info": [
+    {
+      "url": "/style.css",
+      "file_path": "/static/style.css",
+      "classpath": true,
+      "content_type": "text/css"
+    }
+  ]
 }

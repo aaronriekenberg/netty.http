@@ -14,6 +14,7 @@ import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 import java.util.regex.Pattern
 import javax.activation.MimetypesFileTypeMap
@@ -71,7 +72,9 @@ class HttpServerHandler(
 
     @Throws(Exception::class)
     public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
-        logger.info { "channelRead0 request=$request" }
+        val startTime = Instant.now()
+
+        logger.debug { "channelRead0 request=$request" }
 
         if (!request.decoderResult().isSuccess) {
             sendError(ctx, HttpResponseStatus.BAD_REQUEST)
@@ -86,15 +89,18 @@ class HttpServerHandler(
         val keepAlive = HttpUtil.isKeepAlive(request)
         val uri = request.uri()
 
-        val handler = handlerMap.get(uri)
+        val requestContext = RequestContext(
+                ctx = ctx,
+                request = request,
+                keepAlive = keepAlive,
+                startTime = startTime
+        )
+
+        val handler = handlerMap[uri]
         if (handler == null) {
-            ctx.sendError(HttpResponseStatus.NOT_FOUND)
+            requestContext.sendError(HttpResponseStatus.NOT_FOUND)
         } else {
-            handler.handle(RequestContext(
-                    ctx = ctx,
-                    request = request,
-                    keepAlive = keepAlive
-            ))
+            handler.handle(requestContext)
         }
 
 

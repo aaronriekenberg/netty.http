@@ -7,18 +7,46 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
 import io.netty.util.CharsetUtil
 import org.aaron.netty.http.handlers.RequestContext
+import org.aaron.netty.http.logging.HttpRequestLogger
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
+
+    HttpRequestLogger.log(this, response)
+
     ctx.sendResponseAndCleanupConnection(
             response = response,
             keepAlive = keepAlive)
 }
 
-fun ChannelHandlerContext.sendResponseAndCleanupConnection(
+fun RequestContext.sendNotModified() {
+
+    val response = DefaultFullHttpResponse(
+            HttpVersion.HTTP_1_1,
+            HttpResponseStatus.NOT_MODIFIED)
+
+    response.setDateHeader()
+
+    HttpRequestLogger.log(this, response)
+
+    ctx.sendResponseAndCleanupConnection(response, keepAlive)
+}
+
+fun RequestContext.sendError(status: HttpResponseStatus) {
+
+    val response = newDefaultFullHttpResponse(
+            status = status,
+            body = "Failure: $status\r\n")
+    response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
+
+    HttpRequestLogger.log(this, response)
+
+    ctx.sendResponseAndCleanupConnection(response, false)
+}
+
+private fun ChannelHandlerContext.sendResponseAndCleanupConnection(
         response: FullHttpResponse,
         keepAlive: Boolean) {
 
@@ -26,7 +54,7 @@ fun ChannelHandlerContext.sendResponseAndCleanupConnection(
     if (!keepAlive) {
         // We're going to close the connection as soon as the response is sent,
         // so we should also make it clear for the client.
-        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+        response.setConnectionCloseHeader()
     }
 
     val flushPromise = writeAndFlush(response)
@@ -37,14 +65,6 @@ fun ChannelHandlerContext.sendResponseAndCleanupConnection(
     }
 }
 
-fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
-    val response = newDefaultFullHttpResponse(
-            status = status,
-            body = "Failure: $status\r\n")
-    response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
-
-    sendResponseAndCleanupConnection(response, false)
-}
 
 fun ByteBuf.writeStringBuffer(stringBuffer: StringBuffer) {
     val buffer = Unpooled.copiedBuffer(stringBuffer, CharsetUtil.UTF_8)
@@ -72,4 +92,27 @@ private val HTTP_DATE_FORMATTER = object : ThreadLocal<SimpleDateFormat>() {
     }
 }
 
-fun formatHttpDate(instant: Instant) = HTTP_DATE_FORMATTER.get().format(Date(instant.toEpochMilli()))!!
+fun parseHttpDate(string: String): Date =
+        HTTP_DATE_FORMATTER.get().parse(string)
+
+fun HttpResponse.setDateHeader(date: Date = Date()) {
+    headers().set(HttpHeaderNames.DATE, HTTP_DATE_FORMATTER.get().format(date))
+}
+
+fun HttpResponse.setLastModifiedHeader(date: Date) {
+    headers().set(HttpHeaderNames.LAST_MODIFIED, HTTP_DATE_FORMATTER.get().format(date))
+}
+
+fun HttpResponse.setCacheControlHeader(value: String = "private, max-age=$HTTP_CACHE_SECONDS") {
+    headers().set(HttpHeaderNames.CACHE_CONTROL, value)
+}
+
+fun HttpResponse.setContentTypeHeader(value: String) {
+    headers().set(HttpHeaderNames.CONTENT_TYPE, value)
+}
+
+fun HttpResponse.setConnectionCloseHeader() {
+    headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+}
+
+const val HTTP_CACHE_SECONDS = 60

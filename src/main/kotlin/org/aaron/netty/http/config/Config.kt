@@ -18,12 +18,29 @@ data class MainPageInfo(
         val title: String
 )
 
+data class StaticFileInfo(
+        @JsonProperty("url")
+        val url: String,
+
+        @JsonProperty("file_path")
+        val filePath: String,
+
+        @JsonProperty("classpath")
+        val classpath: Boolean,
+
+        @JsonProperty("content_type")
+        val contentType: String
+)
+
 data class Config(
         @JsonProperty("server_info")
         val serverInfo: ServerInfo,
 
         @JsonProperty("main_page_info")
-        val mainPageInfo: MainPageInfo
+        val mainPageInfo: MainPageInfo,
+
+        @JsonProperty("static_file_info")
+        val staticFileInfo: List<StaticFileInfo>
 )
 
 
