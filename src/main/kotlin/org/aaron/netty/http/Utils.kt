@@ -92,8 +92,7 @@ private val HTTP_DATE_FORMATTER = object : ThreadLocal<SimpleDateFormat>() {
     }
 }
 
-fun parseHttpDate(string: String): Date =
-        HTTP_DATE_FORMATTER.get().parse(string)
+fun String.parseHttpDate(): Date = HTTP_DATE_FORMATTER.get().parse(this)
 
 fun HttpResponse.setDateHeader(date: Date = Date()) {
     headers().set(HttpHeaderNames.DATE, HTTP_DATE_FORMATTER.get().format(date))

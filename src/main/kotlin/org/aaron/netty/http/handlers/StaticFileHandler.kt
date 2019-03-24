@@ -45,8 +45,8 @@ class StaticFileHandler(
         // Cache Validation
         val ifModifiedSince = requestContext.request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE)
         logger.debug { "ifModifiedSince = $ifModifiedSince" }
-        if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
-            val ifModifiedSinceDate = parseHttpDate(ifModifiedSince)
+        if (!ifModifiedSince.isNullOrEmpty()) {
+            val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
             logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
 
             // Only compare up to the second because the datetime format we send to the client
