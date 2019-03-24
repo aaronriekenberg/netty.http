@@ -6,6 +6,14 @@ import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
 import io.netty.util.CharsetUtil
+import org.aaron.netty.http.handlers.RequestContext
+
+fun RequestContext.sendResponse(
+        response: FullHttpResponse) {
+    ctx.sendResponseAndCleanupConnection(
+            response = response,
+            keepAlive = keepAlive)
+}
 
 fun ChannelHandlerContext.sendResponseAndCleanupConnection(
         response: FullHttpResponse,
@@ -28,24 +36,14 @@ fun ChannelHandlerContext.sendResponseAndCleanupConnection(
 
 fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
     val response = DefaultFullHttpResponse(
-            HttpVersion.HTTP_1_1, status)
+            HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer("Failure: $status\r\n", CharsetUtil.UTF_8))
     response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
-    response.content().writeString("Failure: $status\r\n")
 
     sendResponseAndCleanupConnection(response, false)
 }
 
 fun ByteBuf.writeStringBuffer(stringBuffer: StringBuffer) {
     val buffer = Unpooled.copiedBuffer(stringBuffer, CharsetUtil.UTF_8)
-    try {
-        writeBytes(buffer)
-    } finally {
-        buffer.release()
-    }
-}
-
-fun ByteBuf.writeString(string: String) {
-    val buffer = Unpooled.copiedBuffer(string, CharsetUtil.UTF_8)
     try {
         writeBytes(buffer)
     } finally {

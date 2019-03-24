@@ -1,16 +1,18 @@
 package org.aaron.netty.http.handlers
 
-import io.netty.channel.ChannelHandlerContext
-import io.netty.handler.codec.http.*
+import io.netty.handler.codec.http.DefaultFullHttpResponse
+import io.netty.handler.codec.http.HttpHeaderNames
+import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.HttpVersion
 import mu.KLogging
-import org.aaron.netty.http.sendResponseAndCleanupConnection
+import org.aaron.netty.http.sendResponse
 import org.aaron.netty.http.writeStringBuffer
 
 class IndexHandler : Handler {
 
     companion object : KLogging()
 
-    override fun handle(ctx: ChannelHandlerContext, request: FullHttpRequest, keepAlive: Boolean) {
+    override fun handle(requestContext: RequestContext) {
         val htmlBuffer = StringBuffer()
         htmlBuffer.append("<html>")
         htmlBuffer.append("<body>")
@@ -23,7 +25,7 @@ class IndexHandler : Handler {
 
         response.content().writeStringBuffer(htmlBuffer)
 
-        ctx.sendResponseAndCleanupConnection(response, keepAlive)
+        requestContext.sendResponse(response)
     }
 
 }

@@ -9,6 +9,7 @@ import io.netty.util.CharsetUtil
 import io.netty.util.internal.SystemPropertyUtil
 import mu.KLogging
 import org.aaron.netty.http.handlers.HandlerMap
+import org.aaron.netty.http.handlers.RequestContext
 import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
@@ -89,7 +90,11 @@ class HttpServerHandler(
         if (handler == null) {
             ctx.sendError(HttpResponseStatus.NOT_FOUND)
         } else {
-            handler.handle(ctx, request, keepAlive)
+            handler.handle(RequestContext(
+                    ctx = ctx,
+                    request = request,
+                    keepAlive = keepAlive
+            ))
         }
 
 
