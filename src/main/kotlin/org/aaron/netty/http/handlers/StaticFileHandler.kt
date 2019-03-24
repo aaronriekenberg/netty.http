@@ -78,7 +78,7 @@ class StaticFileHandler(
         response.setLastModifiedHeader(Date(file.lastModified()))
 
         if (!requestContext.keepAlive) {
-            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+            response.setConnectionCloseHeader()
         }
 
         // Write the initial line and the header.
