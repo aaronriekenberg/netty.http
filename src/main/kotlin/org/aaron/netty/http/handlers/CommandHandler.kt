@@ -10,13 +10,11 @@ import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
 import java.time.Instant
 import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.Executors
 
 private data class CommandTemplateData(
-        val commandInfo: CommandInfo,
-        val lastModified: String
+        val commandInfo: CommandInfo
 )
 
 class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
@@ -35,8 +33,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
         lastModified = Instant.now()
 
         val commandTemplateData = CommandTemplateData(
-                commandInfo = commandInfo,
-                lastModified = OffsetDateTime.ofInstant(lastModified, ZoneId.systemDefault()).toString()
+                commandInfo = commandInfo
         )
 
         htmlString = commandTemplate.apply(commandTemplateData)
