@@ -38,8 +38,7 @@ class HttpServerMain {
 
     fun run() {
         val config = ConfigContainer.config
-        logger.info { "begin run config = ${config}" }
-
+        logger.info { "begin run config = $config" }
 
         val handlerMap = mapOf(
                 "/" to IndexHandler()

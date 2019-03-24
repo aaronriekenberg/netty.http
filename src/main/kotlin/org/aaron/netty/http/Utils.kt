@@ -7,6 +7,9 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
 import io.netty.util.CharsetUtil
 import org.aaron.netty.http.handlers.RequestContext
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
@@ -35,8 +38,9 @@ fun ChannelHandlerContext.sendResponseAndCleanupConnection(
 }
 
 fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
-    val response = DefaultFullHttpResponse(
-            HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer("Failure: $status\r\n", CharsetUtil.UTF_8))
+    val response = newDefaultFullHttpResponse(
+            status = status,
+            body = "Failure: $status\r\n")
     response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
 
     sendResponseAndCleanupConnection(response, false)
@@ -50,3 +54,22 @@ fun ByteBuf.writeStringBuffer(stringBuffer: StringBuffer) {
         buffer.release()
     }
 }
+
+fun newDefaultFullHttpResponse(status: HttpResponseStatus, body: String) =
+        DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1,
+                status,
+                Unpooled.copiedBuffer(body, CharsetUtil.UTF_8))
+
+private const val HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz"
+private const val HTTP_DATE_GMT_TIMEZONE = "GMT"
+
+private val HTTP_DATE_FORMATTER = object : ThreadLocal<SimpleDateFormat>() {
+    override fun initialValue(): SimpleDateFormat {
+        val simpleDateFormat = SimpleDateFormat(HTTP_DATE_FORMAT)
+        simpleDateFormat.timeZone = TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE)
+        return simpleDateFormat
+    }
+}
+
+fun formatHttpDate(instant: Instant) = HTTP_DATE_FORMATTER.get().format(Date(instant.toEpochMilli()))

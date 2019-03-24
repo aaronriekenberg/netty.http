@@ -13,9 +13,17 @@ data class ServerInfo(
         val listenPort: Int
 )
 
+data class MainPageInfo(
+        @JsonProperty("title")
+        val title: String
+)
+
 data class Config(
         @JsonProperty("server_info")
-        val serverInfo: ServerInfo
+        val serverInfo: ServerInfo,
+
+        @JsonProperty("main_page_info")
+        val mainPageInfo: MainPageInfo
 )
 
 
@@ -27,7 +35,7 @@ object ConfigContainer : KLogging() {
         logger.info { "begin init" }
         val objectMapper = ObjectMapper()
         config = objectMapper.readValue(File("config.json"), Config::class.java)
-        logger.info { "config = $config" }
+        logger.info { "end init config = $config" }
     }
 
 }
