@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
 
-data class IndexTemplateData(
+private data class IndexTemplateData(
         val mainPageInfo: MainPageInfo,
         val lastModified: String
 )
