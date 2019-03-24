@@ -13,20 +13,14 @@ import io.netty.channel.socket.ServerSocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
-import io.netty.handler.ssl.SslContext
-import io.netty.handler.ssl.SslContextBuilder
-import io.netty.handler.ssl.SslProvider
-import io.netty.handler.ssl.util.SelfSignedCertificate
 import mu.KLogging
+import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.IndexHandler
 import kotlin.reflect.KClass
 
 class HttpServerMain {
 
     companion object : KLogging()
-
-    private val SSL = System.getProperty("ssl") != null
-    private val PORT = System.getProperty("port", if (SSL) "8443" else "8080").toInt()
 
     private fun createEventLoopGroup(threads: Int = 0): MultithreadEventLoopGroup =
             when {
@@ -43,17 +37,9 @@ class HttpServerMain {
             }
 
     fun run() {
-        logger.info { "begin run" }
+        val config = ConfigContainer.config
+        logger.info { "begin run config = ${config}" }
 
-        // Configure SSL.
-        val sslCtx: SslContext?
-        if (SSL) {
-            val ssc = SelfSignedCertificate()
-            sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
-                    .sslProvider(SslProvider.JDK).build()
-        } else {
-            sslCtx = null
-        }
 
         val handlerMap = mapOf(
                 "/" to IndexHandler()
@@ -70,12 +56,14 @@ class HttpServerMain {
             b.group(bossGroup, workerGroup)
                     .channel(serverSocketChannelClass().java)
                     .handler(LoggingHandler(LogLevel.DEBUG))
-                    .childHandler(HttpServerInitializer(sslCtx, handlerMap))
+                    .childHandler(HttpServerInitializer(handlerMap))
 
-            val ch = b.bind(PORT).sync().channel()
+
+            val ch = b.bind(config.serverInfo.listenAddress, config.serverInfo.listenPort)
+                    .sync().channel()
 
             logger.info {
-                "Open your web browser and navigate to ${if (SSL) "https" else "http"}://127.0.0.1:$PORT/"
+                "Open your web browser and navigate to http://${config.serverInfo.listenAddress}:${config.serverInfo.listenPort}/"
             }
 
             ch.closeFuture().sync()
