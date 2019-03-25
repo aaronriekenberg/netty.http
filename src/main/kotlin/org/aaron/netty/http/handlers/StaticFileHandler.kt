@@ -10,6 +10,7 @@ import org.aaron.netty.http.logging.HttpRequestLogger
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.RandomAccessFile
+import java.time.Instant
 import java.util.*
 
 class StaticFileHandler(
@@ -17,18 +18,75 @@ class StaticFileHandler(
         private val classpath: Boolean,
         private val contentType: String) : Handler {
 
+    private val classpathByteArray: ByteArray?
+
+    private val classpathLastModified: Instant?
+
     init {
-        logger.info { "init filePath = $filePath" }
+        logger.info { "init filePath = $filePath classpath = $classpath" }
+
+        classpathByteArray = if (classpath) {
+            javaClass.getResourceAsStream(filePath).use {
+                it.readAllBytes()
+            }
+        } else {
+            null
+        }
+
+        classpathLastModified = if (classpath) {
+            Instant.now()
+        } else {
+            null
+        }
+
+        logger.info { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) {
 
-        val file =
-                if (!classpath) {
-                    File(filePath)
-                } else {
-                    File(javaClass.getResource(filePath).toURI())
-                }
+    override fun handle(requestContext: RequestContext) {
+        if (classpath) {
+            handleClasspath(requestContext)
+        } else {
+            handleNonClasspath(requestContext)
+        }
+    }
+
+    private fun handleClasspath(requestContext: RequestContext) {
+
+        // Cache Validation
+        val ifModifiedSince = requestContext.request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE)
+        logger.debug { "ifModifiedSince = $ifModifiedSince" }
+        if (!ifModifiedSince.isNullOrEmpty()) {
+            val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
+            logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
+
+            // Only compare up to the second because the datetime format we send to the client
+            // does not have milliseconds
+            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.time / 1_000L
+            val fileLastModifiedSeconds = classpathLastModified!!.toEpochMilli() / 1_000L
+            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
+                requestContext.sendNotModified()
+                return
+            }
+        }
+
+        val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, classpathByteArray!!)
+
+        response.setContentTypeHeader(contentType)
+        response.setDateHeader()
+        response.setCacheControlHeader()
+        response.setLastModifiedHeader(Date(classpathLastModified!!.toEpochMilli()))
+
+        if (!requestContext.keepAlive) {
+            response.setConnectionCloseHeader()
+        }
+
+        requestContext.sendResponse(response)
+    }
+
+    private fun handleNonClasspath(requestContext: RequestContext) {
+
+        val file = File(filePath)
 
         val ctx = requestContext.ctx
 

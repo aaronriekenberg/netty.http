@@ -14,6 +14,8 @@ import java.util.*
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
 
+    HttpUtil.setContentLength(response, response.content().readableBytes().toLong())
+
     HttpRequestLogger.log(this, response)
 
     ctx.sendResponseAndCleanupConnection(
@@ -28,6 +30,7 @@ fun RequestContext.sendNotModified() {
             HttpResponseStatus.NOT_MODIFIED)
 
     response.setDateHeader()
+    HttpUtil.setContentLength(response, response.content().readableBytes().toLong())
 
     HttpRequestLogger.log(this, response)
 
@@ -39,7 +42,9 @@ fun RequestContext.sendError(status: HttpResponseStatus) {
     val response = newDefaultFullHttpResponse(
             status = status,
             body = "Failure: $status\r\n")
-    response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
+
+    response.setContentTypeHeader("text/plain; charset=UTF-8")
+    HttpUtil.setContentLength(response, response.content().readableBytes().toLong())
 
     HttpRequestLogger.log(this, response)
 
@@ -50,7 +55,6 @@ private fun ChannelHandlerContext.sendResponseAndCleanupConnection(
         response: FullHttpResponse,
         keepAlive: Boolean) {
 
-    HttpUtil.setContentLength(response, response.content().readableBytes().toLong())
     if (!keepAlive) {
         // We're going to close the connection as soon as the response is sent,
         // so we should also make it clear for the client.
@@ -80,6 +84,12 @@ fun newDefaultFullHttpResponse(status: HttpResponseStatus, body: String) =
                 HttpVersion.HTTP_1_1,
                 status,
                 Unpooled.copiedBuffer(body, CharsetUtil.UTF_8))
+
+fun newDefaultFullHttpResponse(status: HttpResponseStatus, body: ByteArray) =
+        DefaultFullHttpResponse(
+                HttpVersion.HTTP_1_1,
+                status,
+                Unpooled.copiedBuffer(body))
 
 private const val HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz"
 private const val HTTP_DATE_GMT_TIMEZONE = "GMT"
