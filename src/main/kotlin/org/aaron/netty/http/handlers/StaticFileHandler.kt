@@ -27,7 +27,7 @@ class StaticFileHandler(
 
         classpathByteArray = if (classpath) {
             javaClass.getResourceAsStream(filePath).use {
-                it.readAllBytes()
+                it.readBytes()
             }
         } else {
             null
