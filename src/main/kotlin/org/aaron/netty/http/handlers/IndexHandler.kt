@@ -10,7 +10,6 @@ import org.aaron.netty.http.templates.HandlebarsContainer
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.util.*
 
 private data class IndexTemplateData(
         val mainPageInfo: MainPageInfo,
@@ -48,8 +47,7 @@ class IndexHandler : Handler {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader("text/html; charset=UTF-8")
-        response.setDateHeader()
-        response.setLastModifiedHeader(Date(lastModified.toEpochMilli()))
+        response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
         requestContext.sendResponse(response)

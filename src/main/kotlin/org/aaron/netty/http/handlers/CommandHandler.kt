@@ -10,7 +10,6 @@ import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
 import java.time.Instant
 import java.time.OffsetDateTime
-import java.util.*
 import java.util.concurrent.Executors
 
 private data class CommandTemplateData(
@@ -45,8 +44,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader("text/html; charset=UTF-8")
-        response.setDateHeader()
-        response.setLastModifiedHeader(Date(lastModified.toEpochMilli()))
+        response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
         requestContext.sendResponse(response)
