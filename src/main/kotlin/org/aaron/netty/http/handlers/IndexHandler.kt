@@ -17,9 +17,7 @@ private data class IndexTemplateData(
         val lastModified: String
 )
 
-class IndexHandler : Handler {
-
-    companion object : KLogging()
+object IndexHandler : Handler, KLogging() {
 
     private val htmlString: String
 

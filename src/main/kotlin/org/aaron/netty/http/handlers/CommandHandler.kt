@@ -25,7 +25,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
     private val lastModified: Instant
 
     init {
-        logger.info { "begin init" }
+        logger.debug { "begin init" }
 
         val commandTemplate = HandlebarsContainer.handlebars.compile("command")
 
@@ -37,7 +37,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
         htmlString = commandTemplate.apply(commandTemplateData)
 
-        logger.info { "end init" }
+        logger.debug { "end init" }
     }
 
     override fun handle(requestContext: RequestContext) {
@@ -75,7 +75,7 @@ class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
     }
 }
 
-object CommandRunner : KLogging() {
+private object CommandRunner : KLogging() {
 
     private val objectMapper = ObjectMapper()
 
