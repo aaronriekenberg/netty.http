@@ -51,6 +51,7 @@ object IndexHandler : Handler, KLogging() {
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) = requestContext.sendResponse(response.copy())
+    override fun handle(requestContext: RequestContext) = requestContext.sendResponse(response.retainedDuplicate())
+
 
 }

@@ -85,7 +85,7 @@ private class ClasspathStaticFileHandler(
             return
         }
 
-        requestContext.sendResponse(response.copy())
+        requestContext.sendResponse(response.retainedDuplicate())
     }
 }
 
