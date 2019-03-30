@@ -1,0 +1,162 @@
+{
+  "server_info": {
+    "listen_address": "0.0.0.0",
+    "listen_port": 8000
+  },
+  "main_page_info": {
+    "title": "Aaron's Raspberry Pi"
+  },
+  "static_file_info": [
+    {
+      "url": "/command.js",
+      "file_path": "/static/command.js",
+      "classpath": true,
+      "content_type": "application/javascript"
+    },
+    {
+      "url": "/style.css",
+      "file_path": "/static/style.css",
+      "classpath": true,
+      "content_type": "text/css"
+    }
+  ],
+  "command_info": [
+    {
+      "id": "arp",
+      "description": "arp",
+      "command": "/usr/sbin/arp",
+      "args": [
+        "-an"
+      ]
+    },
+    {
+      "id": "df",
+      "description": "df",
+      "command": "df",
+      "args": [
+        "-h"
+      ]
+    },
+    {
+      "id": "dmesg",
+      "description": "dmesg",
+      "command": "sudo",
+      "args": [
+        "dmesg"
+      ]
+    },
+    {
+      "id": "ifconfig",
+      "description": "ifconfig",
+      "command": "/sbin/ifconfig",
+      "args": []
+    },
+    {
+      "id": "iwconfig",
+      "description": "iwconfig",
+      "command": "/sbin/iwconfig",
+      "args": []
+    },
+    {
+      "id": "log_ls",
+      "description": "log ls",
+      "command": "ls",
+      "args": [
+        "-latrh",
+        "/home/pi/netty.http/logs"
+      ]
+    },
+    {
+      "id": "log_tail",
+      "description": "log tail",
+      "command": "tail",
+      "args": [
+        "-n30",
+        "/home/pi/netty.http/logs/current"
+      ]
+    },
+    {
+      "id": "lscpu",
+      "description": "lscpu",
+      "command": "lscpu",
+      "args": []
+    },
+    {
+      "id": "netstat_an",
+      "description": "netstat -an",
+      "command": "netstat",
+      "args": [
+        "-an"
+      ]
+    },
+    {
+      "id": "netstat_s",
+      "description": "netstat -s",
+      "command": "netstat",
+      "args": [
+        "-s"
+      ]
+    },
+    {
+      "id": "ntpq",
+      "description": "ntpq",
+      "command": "ntpq",
+      "args": [
+        "-p"
+      ]
+    },
+    {
+      "id": "pitemp",
+      "description": "pitemp",
+      "command": "/home/pi/bin/pitemp.sh",
+      "args": []
+    },
+    {
+      "id": "tc_qdisc",
+      "description": "tc_qdisc",
+      "command": "/sbin/tc",
+      "args": [
+        "-s",
+        "qdisc",
+        "show"
+      ]
+    },
+    {
+      "id": "top",
+      "description": "top",
+      "command": "top",
+      "args": [
+        "-b",
+        "-n1"
+      ]
+    },
+    {
+      "id": "unifi_logs",
+      "description": "unifi logs",
+      "command": "sudo",
+      "args": [
+        "tail",
+        "-n30",
+        "/var/log/unifi/server.log"
+      ]
+    },
+    {
+      "id": "uptime",
+      "description": "uptime",
+      "command": "uptime",
+      "args": []
+    },
+    {
+      "id": "vmstat",
+      "description": "vmstat",
+      "command": "vmstat",
+      "args": []
+    },
+    {
+      "id": "w",
+      "description": "w",
+      "command": "w",
+      "args": []
+    }
+  ]
+}
