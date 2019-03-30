@@ -67,8 +67,12 @@ object ConfigContainer : KLogging() {
 
     init {
         logger.info { "begin init" }
-        val objectMapper = ObjectMapper()
-        config = objectMapper.readValue(File("config.json"), Config::class.java)
+
+        val configFile = System.getProperty("config.file.name") ?: "config.json"
+        logger.info { "configFile = '$configFile'" }
+
+        config = ObjectMapper().readValue(File(configFile), Config::class.java)
+
         logger.info { "end init config = $config" }
     }
 
