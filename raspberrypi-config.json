@@ -18,6 +18,12 @@
       "file_path": "/static/style.css",
       "classpath": true,
       "content_type": "text/css"
+    },
+    {
+      "url": "/favicon.ico",
+      "file_path": "/static/favicon.ico",
+      "classpath": true,
+      "content_type": "image/x-icon"
     }
   ],
   "command_info": [
