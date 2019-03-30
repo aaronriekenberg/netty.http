@@ -45,9 +45,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) {
-        requestContext.sendResponse(response.copy())
-    }
+    override fun handle(requestContext: RequestContext) = requestContext.sendResponse(response.copy())
 
 }
 
