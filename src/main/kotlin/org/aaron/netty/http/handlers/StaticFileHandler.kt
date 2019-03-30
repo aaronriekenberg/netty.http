@@ -61,16 +61,22 @@ private class ClasspathStaticFileHandler(
 
     companion object : KLogging()
 
-    private val fileBuffer = javaClass.getResourceAsStream(filePath).use {
-        it.readBytes()
-    }
-
     private val lastModified = Instant.now()
 
-    private val lastModifiedString = lastModified.formatHttpDate()
+    private val response: DefaultFullHttpResponse
 
     init {
-        logger.info { "init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size} lastModified = $lastModified" }
+        val fileBuffer = javaClass.getResourceAsStream(filePath).use {
+            it.readBytes()
+        }
+
+        logger.info { "init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size}" }
+
+        response = newDefaultFullHttpResponse(HttpResponseStatus.OK, fileBuffer)
+
+        response.setContentTypeHeader(contentType)
+        response.setCacheControlHeader()
+        response.setLastModifiedHeader(lastModified.formatHttpDate())
     }
 
     override fun handle(requestContext: RequestContext) {
@@ -79,17 +85,7 @@ private class ClasspathStaticFileHandler(
             return
         }
 
-        val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, fileBuffer)
-
-        response.setContentTypeHeader(contentType)
-        response.setCacheControlHeader()
-        response.setLastModifiedHeader(lastModifiedString)
-
-        if (!requestContext.keepAlive) {
-            response.setConnectionCloseHeader()
-        }
-
-        requestContext.sendResponse(response)
+        requestContext.sendResponse(response.copy())
     }
 }
 
@@ -161,15 +157,17 @@ private class NonClasspathStaticFileHandler(
             lastContentFuture = sendFileFuture
         }
 
-        sendFileFuture.addListener(object : ChannelProgressiveFutureListener {
-            override fun operationProgressed(future: ChannelProgressiveFuture, progress: Long, total: Long) {
-                logger.debug { "${future.channel()} transfer progress= $progress total = $total" }
-            }
+        if (logger.isDebugEnabled) {
+            sendFileFuture.addListener(object : ChannelProgressiveFutureListener {
+                override fun operationProgressed(future: ChannelProgressiveFuture, progress: Long, total: Long) {
+                    logger.debug { "${future.channel()} transfer progress= $progress total = $total" }
+                }
 
-            override fun operationComplete(future: ChannelProgressiveFuture) {
-                logger.debug { "${future.channel()} transfer complete" }
-            }
-        })
+                override fun operationComplete(future: ChannelProgressiveFuture) {
+                    logger.debug { "${future.channel()} transfer complete" }
+                }
+            })
+        }
 
         // Decide whether to close the connection or not.
         if (!requestContext.keepAlive) {

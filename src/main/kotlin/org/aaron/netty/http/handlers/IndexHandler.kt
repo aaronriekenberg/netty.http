@@ -1,5 +1,6 @@
 package org.aaron.netty.http.handlers
 
+import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.*
@@ -21,9 +22,8 @@ private data class IndexTemplateData(
 
 object IndexHandler : Handler, KLogging() {
 
-    private val htmlString: String
 
-    private val lastModifiedString: String
+    private val response: DefaultFullHttpResponse
 
     init {
         logger.debug { "begin init" }
@@ -32,7 +32,7 @@ object IndexHandler : Handler, KLogging() {
         val config = ConfigContainer.config
 
         val lastModified: Instant = Instant.now()
-        lastModifiedString = lastModified.formatHttpDate()
+        val lastModifiedString = lastModified.formatHttpDate()
 
         val indexTemplateData = IndexTemplateData(
                 mainPageInfo = config.mainPageInfo,
@@ -41,19 +41,19 @@ object IndexHandler : Handler, KLogging() {
                 lastModified = OffsetDateTime.ofInstant(lastModified, ZoneId.systemDefault()).toString()
         )
 
-        htmlString = indexTemplate.apply(indexTemplateData)
+        val htmlString = indexTemplate.apply(indexTemplateData)
 
-        logger.debug { "end init" }
-    }
-
-    override fun handle(requestContext: RequestContext) {
-        val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
+        response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModifiedString)
         response.setCacheControlHeader()
 
-        requestContext.sendResponse(response)
+        logger.debug { "end init" }
+    }
+
+    override fun handle(requestContext: RequestContext) {
+        requestContext.sendResponse(response.copy())
     }
 
 }

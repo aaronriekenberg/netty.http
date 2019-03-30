@@ -2,6 +2,7 @@ package org.aaron.netty.http.handlers
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.*
@@ -20,9 +21,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
     companion object : KLogging()
 
-    private val htmlString: String
-
-    private val lastModifiedString = Instant.now().formatHttpDate()
+    private val response: DefaultFullHttpResponse
 
     init {
         logger.debug { "begin init" }
@@ -33,19 +32,21 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
                 commandInfo = commandInfo
         )
 
-        htmlString = commandTemplate.apply(commandTemplateData)
+        val htmlString = commandTemplate.apply(commandTemplateData)
 
-        logger.debug { "end init" }
-    }
+        val lastModifiedString = Instant.now().formatHttpDate()
 
-    override fun handle(requestContext: RequestContext) {
-        val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
+        response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModifiedString)
         response.setCacheControlHeader()
 
-        requestContext.sendResponse(response)
+        logger.debug { "end init" }
+    }
+
+    override fun handle(requestContext: RequestContext) {
+        requestContext.sendResponse(response.copy())
     }
 
 }
