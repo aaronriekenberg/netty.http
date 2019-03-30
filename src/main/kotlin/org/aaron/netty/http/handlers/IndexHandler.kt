@@ -26,7 +26,7 @@ object IndexHandler : Handler, KLogging() {
     private val lastModifiedString: String
 
     init {
-        logger.info { "begin init" }
+        logger.debug { "begin init" }
 
         val indexTemplate = HandlebarsContainer.handlebars.compile("index")
         val config = ConfigContainer.config
@@ -43,7 +43,7 @@ object IndexHandler : Handler, KLogging() {
 
         htmlString = indexTemplate.apply(indexTemplateData)
 
-        logger.info { "end init" }
+        logger.debug { "end init" }
     }
 
     override fun handle(requestContext: RequestContext) {

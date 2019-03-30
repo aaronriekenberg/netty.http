@@ -9,7 +9,7 @@ object HandlebarsContainer : KLogging() {
     val handlebars: Handlebars
 
     init {
-        logger.info { "begin init" }
+        logger.debug { "begin init" }
 
         val loader = ClassPathTemplateLoader()
         loader.prefix = "/templates"
@@ -17,7 +17,7 @@ object HandlebarsContainer : KLogging() {
 
         handlebars = Handlebars(loader)
 
-        logger.info { "end init" }
+        logger.debug { "end init" }
     }
 
 }
