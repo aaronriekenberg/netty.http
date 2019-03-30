@@ -72,7 +72,6 @@ class HttpServerMain {
                     .handler(LoggingHandler(LogLevel.DEBUG))
                     .childHandler(HttpServerInitializer(handlerMap))
 
-
             val ch = b.bind(config.serverInfo.listenAddress, config.serverInfo.listenPort)
                     .sync().channel()
 
