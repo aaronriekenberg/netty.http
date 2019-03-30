@@ -1,6 +1,6 @@
 #!/bin/sh -x
 
-CONFIG_FILE=./$(hostname)-config.json
+CONFIG_FILE=./$(hostname -s)-config.json
 
 pkill -U $(id -u) java
 
