@@ -43,7 +43,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
     override fun handle(requestContext: RequestContext) {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
-        response.setContentTypeHeader("text/html; charset=UTF-8")
+        response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
@@ -111,7 +111,7 @@ object CommandRunner : KLogging() {
             val json = objectMapper.writeValueAsString(commandAPIResult)
 
             val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, json)
-            response.setContentTypeHeader("application/json; charset=UTF-8")
+            response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
 
             requestContext.sendResponse(response)
         }

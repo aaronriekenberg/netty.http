@@ -46,7 +46,7 @@ class IndexHandler : Handler {
     override fun handle(requestContext: RequestContext) {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
-        response.setContentTypeHeader("text/html; charset=UTF-8")
+        response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 

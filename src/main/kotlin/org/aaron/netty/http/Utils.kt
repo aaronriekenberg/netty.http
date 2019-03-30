@@ -17,6 +17,10 @@ data class RequestContext(
         val startTime: Instant
 )
 
+const val CONTENT_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8"
+const val CONTENT_TYPE_TEXT_PLAIN = "text/plain; charset=UTF-8"
+const val CONTENT_TYPE_TEXT_HTML = "text/html; charset=UTF-8"
+
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
 
@@ -49,7 +53,7 @@ fun RequestContext.sendError(status: HttpResponseStatus) {
             status = status,
             body = "Failure: $status\r\n")
 
-    response.setContentTypeHeader("text/plain; charset=UTF-8")
+    response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
     setDefaultHeaders(response)
 
     HttpRequestLogger.log(this, response)
@@ -71,14 +75,14 @@ private fun RequestContext.setDefaultHeaders(response: FullHttpResponse) {
     }
 }
 
-
 fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
 
     val response = newDefaultFullHttpResponse(
             status = status,
             body = "Failure: $status\r\n")
 
-    response.setContentTypeHeader("text/plain; charset=UTF-8")
+    response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
+    response.setConnectionCloseHeader()
 
     HttpRequestLogger.log(response = response)
 
