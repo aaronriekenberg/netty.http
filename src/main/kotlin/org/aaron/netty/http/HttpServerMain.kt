@@ -49,7 +49,6 @@ class HttpServerMain {
             *config.commandInfo.map { "/api/commands/${it.id}" to CommandAPIHandler(it) }.toTypedArray()
     )
 
-
     fun run() {
         val config = ConfigContainer.config
         logger.info { "begin run" }
@@ -75,7 +74,7 @@ class HttpServerMain {
                     .sync().channel()
 
             logger.info {
-                "server started on ${config.serverInfo.listenAddress}:${config.serverInfo.listenPort}"
+                "server started on ${ch.localAddress()}"
             }
 
             ch.closeFuture().sync()

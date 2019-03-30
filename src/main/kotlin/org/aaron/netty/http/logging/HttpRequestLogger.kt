@@ -5,7 +5,6 @@ import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponse
 import mu.KLogging
 import org.aaron.netty.http.RequestContext
-import java.net.InetSocketAddress
 import java.time.Duration
 import java.time.Instant
 
@@ -13,10 +12,10 @@ object HttpRequestLogger : KLogging() {
 
     private fun formatRemoteAddress(ctx: ChannelHandlerContext): String {
         val remoteAddress = ctx.channel()?.remoteAddress()
-        return if (remoteAddress is InetSocketAddress) {
-            "${remoteAddress.address}:${remoteAddress.port}"
+        return if (remoteAddress != null) {
+            remoteAddress.toString()
         } else {
-            ""
+            "UNKNOWN"
         }
     }
 
