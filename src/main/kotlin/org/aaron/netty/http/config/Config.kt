@@ -10,7 +10,10 @@ data class ServerInfo(
         val listenAddress: String,
 
         @JsonProperty("listen_port")
-        val listenPort: Int
+        val listenPort: Int,
+
+        @JsonProperty("tcp_no_delay")
+        val tcpNoDelay: Boolean = true
 )
 
 data class MainPageInfo(
