@@ -11,6 +11,8 @@ class HttpServerInitializer(
         private val handlerMap: HandlerMap) : ChannelInitializer<SocketChannel>() {
 
     public override fun initChannel(ch: SocketChannel) {
+        ch.config().isTcpNoDelay = true
+
         val pipeline = ch.pipeline()
 //        if (sslCtx != null) {
 //            pipeline.addLast(sslCtx.newHandler(ch.alloc()))
