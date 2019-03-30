@@ -75,7 +75,7 @@ class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
     }
 }
 
-object CommandRunner : KLogging() {
+private object CommandRunner : KLogging() {
 
     private val objectMapper = ObjectMapper()
 

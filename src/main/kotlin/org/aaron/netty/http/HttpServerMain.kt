@@ -39,7 +39,7 @@ class HttpServerMain {
 
     private fun handlerMap(config: Config): HandlerMap {
         val handlerMap: MutableMap<String, Handler> = mutableMapOf(
-                "/" to IndexHandler()
+                "/" to IndexHandler
         )
 
         config.staticFileInfo.forEach {
