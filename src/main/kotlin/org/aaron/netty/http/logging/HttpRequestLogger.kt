@@ -25,7 +25,7 @@ object HttpRequestLogger : KLogging() {
             logger.info { "status=${response.status()?.code()} length=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)}" }
         } else {
             val deltaTime = Duration.between(requestContext.startTime, Instant.now())
-            val deltaTimeString = String.format("%.09f", deltaTime.toNanos() / 1e9)
+            val deltaTimeString = "%.09f".format(deltaTime.toNanos() / 1e9)
             logger.info { "${formatRemoteAddress(requestContext.ctx)} ${requestContext.request.method()} ${requestContext.request.uri()} ${requestContext.request.protocolVersion()} status=${response.status()?.code()} length=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)} delta=${deltaTimeString}s" }
         }
     }
