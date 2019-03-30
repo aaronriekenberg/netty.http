@@ -37,35 +37,18 @@ class HttpServerMain {
                 else -> NioServerSocketChannel::class
             }
 
-    private fun handlerMap(config: Config): HandlerMap {
-        val handlerMap: MutableMap<String, Handler> = mutableMapOf(
-                "/" to IndexHandler,
-                "/config" to ConfigHandler
-        )
+    private fun handlerMap(config: Config): HandlerMap = mapOf(
 
-        config.staticFileInfo.forEach {
-            handlerMap[it.url] = StaticFileHandler(
-                    filePath = it.filePath,
-                    classpath = it.classpath,
-                    contentType = it.contentType
-            )
-        }
+            "/" to IndexHandler,
 
+            "/config" to ConfigHandler,
 
-        config.commandInfo.forEach {
-            val htmlPath = "/commands/${it.id}"
-            handlerMap[htmlPath] = CommandHTMLHandler(
-                    commandInfo = it
-            )
+            *config.staticFileInfo.map { it.url to StaticFileHandler(it) }.toTypedArray(),
 
-            val apiPath = "/api/commands/${it.id}"
-            handlerMap[apiPath] = CommandAPIHandler(
-                    commandInfo = it
-            )
-        }
+            *config.commandInfo.map { "/commands/${it.id}" to CommandHTMLHandler(it) }.toTypedArray(),
+            *config.commandInfo.map { "/api/commands/${it.id}" to CommandAPIHandler(it) }.toTypedArray()
+    )
 
-        return handlerMap
-    }
 
     fun run() {
         val config = ConfigContainer.config

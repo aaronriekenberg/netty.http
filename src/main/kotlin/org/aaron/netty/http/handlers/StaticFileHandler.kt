@@ -6,6 +6,7 @@ import io.netty.handler.ssl.SslHandler
 import io.netty.handler.stream.ChunkedFile
 import mu.KLogging
 import org.aaron.netty.http.*
+import org.aaron.netty.http.config.StaticFileInfo
 import org.aaron.netty.http.logging.HttpRequestLogger
 import java.io.File
 import java.io.FileNotFoundException
@@ -13,21 +14,18 @@ import java.io.RandomAccessFile
 import java.time.Instant
 import java.util.*
 
-class StaticFileHandler(
-        filePath: String,
-        classpath: Boolean,
-        contentType: String) : Handler {
+class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
 
     companion object : KLogging()
 
-    private val delegate: Handler = if (classpath) {
+    private val delegate: Handler = if (staticFileInfo.classpath) {
         ClasspathStaticFileHandler(
-                filePath = filePath,
-                contentType = contentType)
+                filePath = staticFileInfo.filePath,
+                contentType = staticFileInfo.contentType)
     } else {
         NonClasspathStaticFileHandler(
-                filePath = filePath,
-                contentType = contentType)
+                filePath = staticFileInfo.filePath,
+                contentType = staticFileInfo.contentType)
     }
 
     override fun handle(requestContext: RequestContext) = delegate.handle(requestContext)
