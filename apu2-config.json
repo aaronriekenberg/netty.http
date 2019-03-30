@@ -1,0 +1,200 @@
+{
+  "server_info": {
+    "listen_address": "0.0.0.0",
+    "listen_port": 8000
+  },
+  "main_page_info": {
+    "title": "Aaron's APU2"
+  },
+  "static_file_info": [
+    {
+      "url": "/command.js",
+      "file_path": "/static/command.js",
+      "classpath": true,
+      "content_type": "application/javascript",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/style.css",
+      "file_path": "/static/style.css",
+      "classpath": true,
+      "content_type": "text/css",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/favicon.ico",
+      "file_path": "/static/favicon.ico",
+      "classpath": true,
+      "content_type": "image/x-icon",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/index.html",
+      "file_path": "/var/www/htdocs/pfstat/index.html",
+      "classpath": false,
+      "content_type": "text/html",
+      "include_in_main_page": true
+    },
+    {
+      "url": "/pfstat/pfstat-packets-v4-1day.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-packets-v4-1day.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/pfstat-packets-v4-1hour.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-packets-v4-1hour.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/pfstat-packets-v4-7days.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-packets-v4-7days.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/pfstat-states-1day.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-states-1day.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/pfstat-v4-1day.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-v4-1day.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/pfstat-v4-1hour.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-v4-1hour.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/pfstat/pfstat-v4-7days.png",
+      "file_path": "/var/www/htdocs/pfstat/pfstat-v4-7days.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    }
+  ],
+  "command_info": [
+    {
+      "id": "arp",
+      "description": "arp",
+      "command": "/usr/sbin/arp",
+      "args": [
+        "-an"
+      ]
+    },
+    {
+      "id": "df",
+      "description": "df",
+      "command": "df",
+      "args": [
+        "-h"
+      ]
+    },
+    {
+      "id": "dhcp-lease-list",
+      "description": "dhcp lease list",
+      "command": "/home/aaron/dhcp-leases/show-leases.sh",
+      "args": []
+    },
+    {
+      "id": "dmesg",
+      "description": "dmesg",
+      "command": "dmesg",
+      "args": []
+    },
+    {
+      "id": "ifconfig",
+      "description": "ifconfig",
+      "command": "/sbin/ifconfig",
+      "args": []
+    },
+    {
+      "id": "log_ls",
+      "description": "log ls",
+      "command": "ls",
+      "args": [
+        "-latrh",
+        "/home/aaron/netty.http/logs"
+      ]
+    },
+    {
+      "id": "log_tail",
+      "description": "log tail",
+      "command": "tail",
+      "args": [
+        "-n30",
+        "/home/aaron/netty.http/logs/current"
+      ]
+    },
+    {
+      "id": "netstat_an",
+      "description": "netstat -an",
+      "command": "netstat",
+      "args": [
+        "-an"
+      ]
+    },
+    {
+      "id": "netstat_s",
+      "description": "netstat -s",
+      "command": "netstat",
+      "args": [
+        "-s"
+      ]
+    },
+    {
+      "id": "ntpq",
+      "description": "ntpq",
+      "command": "ntpq",
+      "args": [
+        "-p"
+      ]
+    },
+    {
+      "id": "sysctl_hw",
+      "description": "sysctl hw",
+      "command": "sysctl",
+      "args": [
+        "hw"
+      ]
+    },
+    {
+      "id": "top",
+      "description": "top",
+      "command": "top",
+      "args": [
+        "-b"
+      ]
+    },
+    {
+      "id": "uptime",
+      "description": "uptime",
+      "command": "uptime",
+      "args": []
+    },
+    {
+      "id": "vmstat",
+      "description": "vmstat",
+      "command": "vmstat",
+      "args": []
+    },
+    {
+      "id": "w",
+      "description": "w",
+      "command": "w",
+      "args": []
+    }
+  ]
+}
