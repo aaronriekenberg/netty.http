@@ -128,18 +128,20 @@ private val HTTP_DATE_FORMATTER = object : ThreadLocal<SimpleDateFormat>() {
 
 fun String.parseHttpDate(): Date = HTTP_DATE_FORMATTER.get().parse(this)
 
+fun Instant.formatHttpDate(): String = HTTP_DATE_FORMATTER.get().format(Date(toEpochMilli()))
+
 fun HttpResponse.setDateHeaderIfNotSet(date: Date? = null) {
     if (!headers().contains(HttpHeaderNames.DATE)) {
         headers().set(HttpHeaderNames.DATE, HTTP_DATE_FORMATTER.get().format(date ?: Date()))
     }
 }
 
-fun HttpResponse.setLastModifiedHeader(instant: Instant) {
-    setLastModifiedHeader(Date(instant.toEpochMilli()))
-}
-
 fun HttpResponse.setLastModifiedHeader(date: Date) {
     headers().set(HttpHeaderNames.LAST_MODIFIED, HTTP_DATE_FORMATTER.get().format(date))
+}
+
+fun HttpResponse.setLastModifiedHeader(string: String) {
+    headers().set(HttpHeaderNames.LAST_MODIFIED, string)
 }
 
 private const val HTTP_CACHE_SECONDS = 60

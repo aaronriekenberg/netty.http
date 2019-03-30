@@ -22,14 +22,12 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
     private val htmlString: String
 
-    private val lastModified: Instant
+    private val lastModifiedString = Instant.now().formatHttpDate()
 
     init {
         logger.debug { "begin init" }
 
         val commandTemplate = HandlebarsContainer.handlebars.compile("command")
-
-        lastModified = Instant.now()
 
         val commandTemplateData = CommandTemplateData(
                 commandInfo = commandInfo
@@ -44,7 +42,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
-        response.setLastModifiedHeader(lastModified)
+        response.setLastModifiedHeader(lastModifiedString)
         response.setCacheControlHeader()
 
         requestContext.sendResponse(response)

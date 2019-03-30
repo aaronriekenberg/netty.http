@@ -23,7 +23,7 @@ object IndexHandler : Handler, KLogging() {
 
     private val htmlString: String
 
-    private val lastModified: Instant
+    private val lastModifiedString: String
 
     init {
         logger.info { "begin init" }
@@ -31,7 +31,8 @@ object IndexHandler : Handler, KLogging() {
         val indexTemplate = HandlebarsContainer.handlebars.compile("index")
         val config = ConfigContainer.config
 
-        lastModified = Instant.now()
+        val lastModified: Instant = Instant.now()
+        lastModifiedString = lastModified.formatHttpDate()
 
         val indexTemplateData = IndexTemplateData(
                 mainPageInfo = config.mainPageInfo,
@@ -49,7 +50,7 @@ object IndexHandler : Handler, KLogging() {
         val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
-        response.setLastModifiedHeader(lastModified)
+        response.setLastModifiedHeader(lastModifiedString)
         response.setCacheControlHeader()
 
         requestContext.sendResponse(response)

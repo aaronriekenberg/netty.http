@@ -67,6 +67,8 @@ private class ClasspathStaticFileHandler(
 
     private val lastModified = Instant.now()
 
+    private val lastModifiedString = lastModified.formatHttpDate()
+
     init {
         logger.info { "init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size} lastModified = $lastModified" }
     }
@@ -81,7 +83,7 @@ private class ClasspathStaticFileHandler(
 
         response.setContentTypeHeader(contentType)
         response.setCacheControlHeader()
-        response.setLastModifiedHeader(lastModified)
+        response.setLastModifiedHeader(lastModifiedString)
 
         if (!requestContext.keepAlive) {
             response.setConnectionCloseHeader()
