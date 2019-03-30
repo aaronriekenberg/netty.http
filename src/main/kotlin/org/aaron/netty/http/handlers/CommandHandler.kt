@@ -56,8 +56,10 @@ class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
 
     companion object : KLogging()
 
+    private val commandAndArgs = listOf(commandInfo.command) + commandInfo.args
+
     override fun handle(requestContext: RequestContext) {
-        CommandRunner.runCommand(requestContext, commandInfo)
+        CommandRunner.runCommand(requestContext, commandInfo, commandAndArgs)
     }
 }
 
@@ -81,10 +83,9 @@ private object CommandRunner : KLogging() {
 
     private val runCommandScheduler = Executors.newCachedThreadPool()
 
-    fun runCommand(requestContext: RequestContext, commandInfo: CommandInfo) {
+    fun runCommand(requestContext: RequestContext, commandInfo: CommandInfo, commandAndArgs: List<String>) {
         runCommandScheduler.execute {
             val commandAPIResult = try {
-                val commandAndArgs = listOf(commandInfo.command) + commandInfo.args
                 val processBuilder = ProcessBuilder(commandAndArgs)
                 processBuilder.redirectErrorStream(true)
                 logger.debug { "start process $commandAndArgs" }
