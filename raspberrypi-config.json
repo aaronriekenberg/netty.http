@@ -11,19 +11,22 @@
       "url": "/command.js",
       "file_path": "/static/command.js",
       "classpath": true,
-      "content_type": "application/javascript"
+      "content_type": "application/javascript",
+      "include_in_main_page": false
     },
     {
       "url": "/style.css",
       "file_path": "/static/style.css",
       "classpath": true,
-      "content_type": "text/css"
+      "content_type": "text/css",
+      "include_in_main_page": false
     },
     {
       "url": "/favicon.ico",
       "file_path": "/static/favicon.ico",
       "classpath": true,
-      "content_type": "image/x-icon"
+      "content_type": "image/x-icon",
+      "include_in_main_page": false
     }
   ],
   "command_info": [

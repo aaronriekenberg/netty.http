@@ -29,7 +29,10 @@ data class StaticFileInfo(
         val classpath: Boolean,
 
         @JsonProperty("content_type")
-        val contentType: String
+        val contentType: String,
+
+        @JsonProperty("include_in_main_page")
+        val includeInMainPage: Boolean
 )
 
 data class CommandInfo(

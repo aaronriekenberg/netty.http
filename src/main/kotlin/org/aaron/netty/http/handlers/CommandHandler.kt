@@ -52,7 +52,16 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
 }
 
-data class CommandAPIResult(
+class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
+
+    companion object : KLogging()
+
+    override fun handle(requestContext: RequestContext) {
+        CommandRunner.runCommand(requestContext, commandInfo)
+    }
+}
+
+private data class CommandAPIResult(
         @JsonProperty("command_info")
         val commandInfo: CommandInfo,
 
@@ -65,15 +74,6 @@ data class CommandAPIResult(
         @JsonProperty("exit_value")
         val exitValue: Int
 )
-
-class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
-
-    companion object : KLogging()
-
-    override fun handle(requestContext: RequestContext) {
-        CommandRunner.runCommand(requestContext, commandInfo)
-    }
-}
 
 private object CommandRunner : KLogging() {
 

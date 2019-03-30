@@ -18,6 +18,13 @@
     </ul>
   {{/if}}
 
+  {{#if staticFilesInMainPage}}
+    <h3>Static Paths:</h3>
+    <ul>{{#each staticFilesInMainPage}}
+      <li><a href="{{url}}">{{filePath}}</a></li>{{/each}}
+    </ul>
+  {{/if}}
+
 <!--
   {{#if proxies}}
     <h3>Proxies:</h3>
@@ -37,6 +44,7 @@
 
   <small>Page Generated: {{lastModified}}</small>
   <br>
+
 <!--  <small>Git Hash: {{environment.git_hash}}</small> -->
 
 </body>

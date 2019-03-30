@@ -6,6 +6,7 @@ import org.aaron.netty.http.*
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.config.MainPageInfo
+import org.aaron.netty.http.config.StaticFileInfo
 import org.aaron.netty.http.templates.HandlebarsContainer
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -14,6 +15,7 @@ import java.time.ZoneId
 private data class IndexTemplateData(
         val mainPageInfo: MainPageInfo,
         val commandInfo: List<CommandInfo>,
+        val staticFilesInMainPage: List<StaticFileInfo>,
         val lastModified: String
 )
 
@@ -27,12 +29,14 @@ object IndexHandler : Handler, KLogging() {
         logger.info { "begin init" }
 
         val indexTemplate = HandlebarsContainer.handlebars.compile("index")
+        val config = ConfigContainer.config
 
         lastModified = Instant.now()
 
         val indexTemplateData = IndexTemplateData(
-                mainPageInfo = ConfigContainer.config.mainPageInfo,
-                commandInfo = ConfigContainer.config.commandInfo,
+                mainPageInfo = config.mainPageInfo,
+                commandInfo = config.commandInfo,
+                staticFilesInMainPage = config.staticFileInfo.filter { it.includeInMainPage },
                 lastModified = OffsetDateTime.ofInstant(lastModified, ZoneId.systemDefault()).toString()
         )
 
