@@ -91,7 +91,7 @@ class HttpServerMain {
                     .sync().channel()
 
             logger.info {
-                "Open your web browser and navigate to http://${config.serverInfo.listenAddress}:${config.serverInfo.listenPort}/"
+                "server started on ${config.serverInfo.listenAddress}:${config.serverInfo.listenPort}"
             }
 
             ch.closeFuture().sync()
