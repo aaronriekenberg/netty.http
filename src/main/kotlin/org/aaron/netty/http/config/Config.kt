@@ -13,7 +13,7 @@ data class ServerInfo(
         val listenPort: Int,
 
         @JsonProperty("tcp_no_delay")
-        val tcpNoDelay: Boolean = true
+        val tcpNoDelay: Boolean
 )
 
 data class MainPageInfo(
