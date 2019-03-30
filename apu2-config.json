@@ -163,6 +163,26 @@
       ]
     },
     {
+      "id": "pfctl_si_v",
+      "description": "pfctl -si -v",
+      "command": "doas",
+      "args": [
+        "/sbin/pfctl",
+        "-si",
+        "-v"
+      ]
+    },
+    {
+      "id": "pfctl_sq_v",
+      "description": "pfctl -sq -v",
+      "command": "doas",
+      "args": [
+        "/sbin/pfctl",
+        "-sq",
+        "-v"
+      ]
+    },
+    {
       "id": "sysctl_hw",
       "description": "sysctl hw",
       "command": "sysctl",
