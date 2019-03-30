@@ -155,11 +155,11 @@
       ]
     },
     {
-      "id": "ntpq",
-      "description": "ntpq",
-      "command": "ntpq",
+      "id": "ntpctl",
+      "description": "ntpctl",
+      "command": "ntpctl",
       "args": [
-        "-p"
+        "-sa"
       ]
     },
     {
