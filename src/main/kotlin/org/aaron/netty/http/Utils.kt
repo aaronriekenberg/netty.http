@@ -5,11 +5,17 @@ import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
 import io.netty.util.CharsetUtil
-import org.aaron.netty.http.handlers.RequestContext
 import org.aaron.netty.http.logging.HttpRequestLogger
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
+
+data class RequestContext(
+        val ctx: ChannelHandlerContext,
+        val request: FullHttpRequest,
+        val keepAlive: Boolean,
+        val startTime: Instant
+)
 
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
@@ -36,6 +42,7 @@ fun RequestContext.sendNotModified() {
     ctx.sendResponseAndCleanupConnection(response, keepAlive)
 }
 
+
 fun RequestContext.sendError(status: HttpResponseStatus) {
 
     val response = newDefaultFullHttpResponse(
@@ -47,7 +54,9 @@ fun RequestContext.sendError(status: HttpResponseStatus) {
 
     HttpRequestLogger.log(this, response)
 
-    ctx.sendResponseAndCleanupConnection(response, false)
+    ctx.sendResponseAndCleanupConnection(
+            response = response,
+            keepAlive = if (statusDropsConnection(status)) false else keepAlive)
 }
 
 private fun RequestContext.setDefaultHeaders(response: FullHttpResponse) {
@@ -60,6 +69,22 @@ private fun RequestContext.setDefaultHeaders(response: FullHttpResponse) {
         // so we should also make it clear for the client.
         response.setConnectionCloseHeader()
     }
+}
+
+
+fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
+
+    val response = newDefaultFullHttpResponse(
+            status = status,
+            body = "Failure: $status\r\n")
+
+    response.setContentTypeHeader("text/plain; charset=UTF-8")
+
+    HttpRequestLogger.log(response = response)
+
+    sendResponseAndCleanupConnection(
+            response = response,
+            keepAlive = false)
 }
 
 private fun ChannelHandlerContext.sendResponseAndCleanupConnection(
@@ -113,6 +138,8 @@ fun HttpResponse.setLastModifiedHeader(date: Date) {
     headers().set(HttpHeaderNames.LAST_MODIFIED, HTTP_DATE_FORMATTER.get().format(date))
 }
 
+private const val HTTP_CACHE_SECONDS = 60
+
 fun HttpResponse.setCacheControlHeader(value: String = "private, max-age=$HTTP_CACHE_SECONDS") {
     headers().set(HttpHeaderNames.CACHE_CONTROL, value)
 }
@@ -125,4 +152,17 @@ fun HttpResponse.setConnectionCloseHeader() {
     headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
 }
 
-private const val HTTP_CACHE_SECONDS = 60
+// copied from Tomcat
+// https://github.com/apache/tomcat/blob/3e5ce3108e2684bc25013d9a84a7966a6dcd6e14/java/org/apache/coyote/http11/Http11Processor.java#L220-L233
+private fun statusDropsConnection(status: HttpResponseStatus): Boolean =
+        when (status) {
+            HttpResponseStatus.BAD_REQUEST -> true
+            HttpResponseStatus.REQUEST_TIMEOUT -> true
+            HttpResponseStatus.LENGTH_REQUIRED -> true
+            HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE -> true
+            HttpResponseStatus.REQUEST_URI_TOO_LONG -> true
+            HttpResponseStatus.INTERNAL_SERVER_ERROR -> true
+            HttpResponseStatus.SERVICE_UNAVAILABLE -> true
+            HttpResponseStatus.NOT_IMPLEMENTED -> true
+            else -> false
+        }

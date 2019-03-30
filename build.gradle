@@ -3,7 +3,6 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext {
-        activation_version = '1.1.1'
         handlebars_version = '4.1.2'
         jackson_version = '2.9.8'
         junit_version = '4.12'
@@ -42,7 +41,6 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
     implementation "io.netty:netty-all:$netty_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "javax.activation:activation:$activation_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.github.microutils:kotlin-logging:$kotlin_logging_version"
     testImplementation "junit:junit:$junit_version"

@@ -1,14 +1,13 @@
 package org.aaron.netty.http
 
-import io.netty.buffer.Unpooled
-import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
-import io.netty.handler.codec.http.*
-import io.netty.util.CharsetUtil
+import io.netty.handler.codec.http.FullHttpRequest
+import io.netty.handler.codec.http.HttpMethod
+import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.HttpUtil
 import mu.KLogging
 import org.aaron.netty.http.handlers.HandlerMap
-import org.aaron.netty.http.handlers.RequestContext
 import java.time.Instant
 
 
@@ -64,31 +63,28 @@ class HttpServerHandler(
 
     companion object : KLogging()
 
-    @Throws(Exception::class)
     public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
-        val startTime = Instant.now()
 
         logger.debug { "channelRead0 request=$request" }
-
-        if (!request.decoderResult().isSuccess) {
-            sendError(ctx, HttpResponseStatus.BAD_REQUEST)
-            return
-        }
-
-        if (HttpMethod.GET != request.method()) {
-            sendError(ctx, HttpResponseStatus.METHOD_NOT_ALLOWED)
-            return
-        }
-
-        val keepAlive = HttpUtil.isKeepAlive(request)
-        val uri = request.uri()
 
         val requestContext = RequestContext(
                 ctx = ctx,
                 request = request,
-                keepAlive = keepAlive,
-                startTime = startTime
+                keepAlive = HttpUtil.isKeepAlive(request),
+                startTime = Instant.now()
         )
+
+        if (!request.decoderResult().isSuccess) {
+            requestContext.sendError(HttpResponseStatus.BAD_REQUEST)
+            return
+        }
+
+        if (HttpMethod.GET != request.method()) {
+            requestContext.sendError(HttpResponseStatus.METHOD_NOT_ALLOWED)
+            return
+        }
+
+        val uri = request.uri()
 
         val handler = handlerMap[uri]
         if (handler == null) {
@@ -100,38 +96,12 @@ class HttpServerHandler(
     }
 
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        cause.printStackTrace()
+
+        logger.warn(cause) { "exceptionCaught ctx=$ctx" }
+
         if (ctx.channel().isActive) {
-            sendError(ctx, HttpResponseStatus.INTERNAL_SERVER_ERROR)
+            ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
-    private fun sendError(ctx: ChannelHandlerContext, status: HttpResponseStatus) {
-        val response = DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer("Failure: $status\r\n", CharsetUtil.UTF_8))
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8")
-
-        sendAndCleanupConnection(ctx, response, false)
-    }
-
-    /**
-     * If Keep-Alive is disabled, attaches "Connection: close" header to the response
-     * and closes the connection after the response being sent.
-     */
-    private fun sendAndCleanupConnection(ctx: ChannelHandlerContext, response: FullHttpResponse,
-                                         keepAlive: Boolean) {
-        HttpUtil.setContentLength(response, response.content().readableBytes().toLong())
-        if (!keepAlive) {
-            // We're going to close the connection as soon as the response is sent,
-            // so we should also make it clear for the client.
-            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
-        }
-
-        val flushPromise = ctx.writeAndFlush(response)
-
-        if (!keepAlive) {
-            // Close the connection as soon as the response is sent.
-            flushPromise.addListener(ChannelFutureListener.CLOSE)
-        }
-    }
 }
