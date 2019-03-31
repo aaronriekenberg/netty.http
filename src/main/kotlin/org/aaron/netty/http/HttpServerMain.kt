@@ -18,6 +18,7 @@ import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.*
 import org.aaron.netty.http.netty.HttpServerInitializer
+import java.time.Instant
 import kotlin.reflect.KClass
 
 class HttpServerMain {
@@ -56,8 +57,11 @@ class HttpServerMain {
     }
 
     fun run() {
-        val config = ConfigContainer.config
+        val startTime = Instant.now()
+
         logger.info { "begin run" }
+
+        val config = ConfigContainer.config
 
         val handlerMap = handlerMap(config)
 
@@ -79,7 +83,7 @@ class HttpServerMain {
                     .sync().channel()
 
             logger.info {
-                "server started on ${ch.localAddress()}"
+                "server started on ${ch.localAddress()} in ${startTime.getDeltaTimeSinceSecondsString()}s"
             }
 
             ch.closeFuture().sync()
