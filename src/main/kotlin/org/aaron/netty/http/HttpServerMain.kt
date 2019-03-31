@@ -1,16 +1,6 @@
 package org.aaron.netty.http
 
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.MultithreadEventLoopGroup
-import io.netty.channel.epoll.Epoll
-import io.netty.channel.epoll.EpollEventLoopGroup
-import io.netty.channel.epoll.EpollServerSocketChannel
-import io.netty.channel.kqueue.KQueue
-import io.netty.channel.kqueue.KQueueEventLoopGroup
-import io.netty.channel.kqueue.KQueueServerSocketChannel
-import io.netty.channel.nio.NioEventLoopGroup
-import io.netty.channel.socket.ServerSocketChannel
-import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import mu.KLogging
@@ -18,26 +8,13 @@ import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.*
 import org.aaron.netty.http.netty.HttpServerInitializer
+import org.aaron.netty.http.netty.createEventLoopGroup
+import org.aaron.netty.http.netty.serverSocketChannelClass
 import java.time.Instant
-import kotlin.reflect.KClass
 
 class HttpServerMain {
 
     companion object : KLogging()
-
-    private fun createEventLoopGroup(threads: Int = 0): MultithreadEventLoopGroup =
-            when {
-                Epoll.isAvailable() -> EpollEventLoopGroup(threads)
-                KQueue.isAvailable() -> KQueueEventLoopGroup(threads)
-                else -> NioEventLoopGroup(threads)
-            }
-
-    private fun serverSocketChannelClass(): KClass<out ServerSocketChannel> =
-            when {
-                Epoll.isAvailable() -> EpollServerSocketChannel::class
-                KQueue.isAvailable() -> KQueueServerSocketChannel::class
-                else -> NioServerSocketChannel::class
-            }
 
     private fun handlerMap(config: Config): HandlerMap {
         var map: HandlerMap = mapOf()

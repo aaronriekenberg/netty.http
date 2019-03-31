@@ -3,6 +3,16 @@ package org.aaron.netty.http.netty
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.MultithreadEventLoopGroup
+import io.netty.channel.epoll.Epoll
+import io.netty.channel.epoll.EpollEventLoopGroup
+import io.netty.channel.epoll.EpollServerSocketChannel
+import io.netty.channel.kqueue.KQueue
+import io.netty.channel.kqueue.KQueueEventLoopGroup
+import io.netty.channel.kqueue.KQueueServerSocketChannel
+import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.socket.ServerSocketChannel
+import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.http.*
 import io.netty.util.AttributeKey
 import io.netty.util.CharsetUtil
@@ -10,6 +20,21 @@ import org.aaron.netty.http.logging.HttpRequestLogger
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
+import kotlin.reflect.KClass
+
+fun createEventLoopGroup(threads: Int = 0): MultithreadEventLoopGroup =
+        when {
+            Epoll.isAvailable() -> EpollEventLoopGroup(threads)
+            KQueue.isAvailable() -> KQueueEventLoopGroup(threads)
+            else -> NioEventLoopGroup(threads)
+        }
+
+fun serverSocketChannelClass(): KClass<out ServerSocketChannel> =
+        when {
+            Epoll.isAvailable() -> EpollServerSocketChannel::class
+            KQueue.isAvailable() -> KQueueServerSocketChannel::class
+            else -> NioServerSocketChannel::class
+        }
 
 data class RequestContext(
         val ctx: ChannelHandlerContext,
@@ -20,10 +45,6 @@ data class RequestContext(
         val keepAlive: Boolean,
         val startTime: Instant
 )
-
-const val CONTENT_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8"
-const val CONTENT_TYPE_TEXT_PLAIN = "text/plain; charset=UTF-8"
-const val CONTENT_TYPE_TEXT_HTML = "text/html; charset=UTF-8"
 
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
@@ -159,6 +180,10 @@ private const val HTTP_CACHE_SECONDS = 60
 fun HttpResponse.setCacheControlHeader(value: String = "private, max-age=$HTTP_CACHE_SECONDS") {
     headers().set(HttpHeaderNames.CACHE_CONTROL, value)
 }
+
+const val CONTENT_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8"
+const val CONTENT_TYPE_TEXT_PLAIN = "text/plain; charset=UTF-8"
+const val CONTENT_TYPE_TEXT_HTML = "text/html; charset=UTF-8"
 
 fun HttpResponse.setContentTypeHeader(value: String) {
     headers().set(HttpHeaderNames.CONTENT_TYPE, value)
