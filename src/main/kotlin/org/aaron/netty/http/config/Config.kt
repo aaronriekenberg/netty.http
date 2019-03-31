@@ -1,6 +1,7 @@
 package org.aaron.netty.http.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KLogging
 import org.aaron.netty.http.json.ObjectMapperContainer
 import java.io.File
@@ -82,7 +83,7 @@ object ConfigContainer : KLogging() {
         val configFile = System.getProperty("config.file.name") ?: "config.json"
         logger.info { "configFile = '$configFile'" }
 
-        config = ObjectMapperContainer.objectMapper.readValue(File(configFile), Config::class.java)
+        config = ObjectMapperContainer.objectMapper.readValue(File(configFile))
 
         logger.info { "end init config = $config" }
     }
