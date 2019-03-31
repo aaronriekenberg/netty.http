@@ -55,7 +55,7 @@ fun RequestContext.sendNotModified() {
 
 fun RequestContext.sendError(status: HttpResponseStatus) {
 
-    val keepAliveAfterError = if (statusDropsConnection(status)) false else keepAlive
+    val keepAliveAfterError = if (status.dropsConnection()) false else keepAlive
 
     val response = newDefaultFullHttpResponse(
             status = status,
@@ -170,8 +170,8 @@ fun HttpResponse.setConnectionCloseHeader() {
 
 // copied from Tomcat
 // https://github.com/apache/tomcat/blob/3e5ce3108e2684bc25013d9a84a7966a6dcd6e14/java/org/apache/coyote/http11/Http11Processor.java#L220-L233
-private fun statusDropsConnection(status: HttpResponseStatus): Boolean =
-        when (status) {
+private fun HttpResponseStatus.dropsConnection(): Boolean =
+        when (this) {
             HttpResponseStatus.BAD_REQUEST -> true
             HttpResponseStatus.REQUEST_TIMEOUT -> true
             HttpResponseStatus.LENGTH_REQUIRED -> true
