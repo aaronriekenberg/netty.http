@@ -6,63 +6,85 @@ import mu.KLogging
 import java.io.File
 
 data class ServerInfo(
-        @JsonProperty("listen_address")
+
+        @param:JsonProperty("listen_address")
+        @get:JsonProperty("listen_address")
         val listenAddress: String,
 
-        @JsonProperty("listen_port")
+        @param:JsonProperty("listen_port")
+        @get:JsonProperty("listen_port")
         val listenPort: Int,
 
-        @JsonProperty("tcp_no_delay")
+        @param:JsonProperty("tcp_no_delay")
+        @get:JsonProperty("tcp_no_delay")
         val tcpNoDelay: Boolean
 )
 
 data class MainPageInfo(
-        @JsonProperty("title")
+
+        @param:JsonProperty("title")
+        @get:JsonProperty("title")
         val title: String
 )
 
 data class StaticFileInfo(
-        @JsonProperty("url")
+
+        @param:JsonProperty("url")
+        @get:JsonProperty("url")
         val url: String,
 
-        @JsonProperty("file_path")
+        @param:JsonProperty("file_path")
+        @get:JsonProperty("file_path")
         val filePath: String,
 
-        @JsonProperty("classpath")
+        @param:JsonProperty("classpath")
+        @get:JsonProperty("classpath")
         val classpath: Boolean,
 
-        @JsonProperty("content_type")
+        @param:JsonProperty("content_type")
+        @get:JsonProperty("content_type")
         val contentType: String,
 
-        @JsonProperty("include_in_main_page")
+        @param:JsonProperty("include_in_main_page")
+        @get:JsonProperty("include_in_main_page")
         val includeInMainPage: Boolean
 )
 
 data class CommandInfo(
-        @JsonProperty("id")
+
+        @param:JsonProperty("id")
+        @get:JsonProperty("id")
         val id: String,
 
-        @JsonProperty("description")
+        @param:JsonProperty("description")
+        @get:JsonProperty("description")
         val description: String,
 
-        @JsonProperty("command")
+        @param:JsonProperty("command")
+        @get:JsonProperty("command")
         val command: String,
 
-        @JsonProperty("args")
+        @param:JsonProperty("args")
+        @get:JsonProperty("args")
         val args: List<String>
 )
 
 data class Config(
-        @JsonProperty("server_info")
+
+        @param:JsonProperty("server_info")
+        @get:JsonProperty("server_info")
         val serverInfo: ServerInfo,
 
-        @JsonProperty("main_page_info")
+        @param:JsonProperty("main_page_info")
+        @get:JsonProperty("main_page_info")
         val mainPageInfo: MainPageInfo,
 
-        @JsonProperty("static_file_info")
+        @param:JsonProperty("static_file_info")
+        @get:JsonProperty("static_file_info")
         val staticFileInfo: List<StaticFileInfo>,
 
-        @JsonProperty("command_info")
+        @param:JsonProperty("command_info")
+        @get:JsonProperty("command_info")
         val commandInfo: List<CommandInfo>
 )
 

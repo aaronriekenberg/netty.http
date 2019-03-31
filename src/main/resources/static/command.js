@@ -10,8 +10,8 @@ const updatePre = (text) => {
 xRequest.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         const responseObject = JSON.parse(xRequest.responseText);
-        let command = responseObject.commandInfo.command;
-        for (const arg of (responseObject.commandInfo.args || [])) {
+        let command = responseObject.command_info.command;
+        for (const arg of (responseObject.command_info.args || [])) {
           command += ` ${arg}`;
         }
         let preText = `Now: ${responseObject.now}\n\n`;

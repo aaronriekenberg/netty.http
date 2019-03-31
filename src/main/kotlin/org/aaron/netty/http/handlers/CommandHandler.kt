@@ -61,16 +61,21 @@ class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
 }
 
 private data class CommandAPIResult(
-        @JsonProperty("command_info")
+
+        @param:JsonProperty("command_info")
+        @get:JsonProperty("command_info")
         val commandInfo: CommandInfo,
 
-        @JsonProperty("now")
+        @param:JsonProperty("now")
+        @get:JsonProperty("now")
         val now: String,
 
-        @JsonProperty("output")
+        @param:JsonProperty("output")
+        @get:JsonProperty("output")
         val output: String,
 
-        @JsonProperty("exit_value")
+        @param:JsonProperty("exit_value")
+        @get:JsonProperty("exit_value")
         val exitValue: Int
 )
 
