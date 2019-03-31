@@ -12,7 +12,10 @@ import java.util.*
 
 data class RequestContext(
         val ctx: ChannelHandlerContext,
-        val request: FullHttpRequest,
+        val requestUri: String,
+        val requestMethod: HttpMethod,
+        val requestHeaders: HttpHeaders,
+        val protocolVersion: HttpVersion,
         val keepAlive: Boolean,
         val startTime: Instant
 )

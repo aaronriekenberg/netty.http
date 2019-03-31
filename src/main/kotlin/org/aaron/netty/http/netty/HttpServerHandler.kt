@@ -21,7 +21,10 @@ class HttpServerHandler(
 
         val requestContext = RequestContext(
                 ctx = ctx,
-                request = request,
+                requestUri = request.uri(),
+                requestMethod = request.method(),
+                requestHeaders = request.headers().copy(),
+                protocolVersion = request.protocolVersion(),
                 keepAlive = HttpUtil.isKeepAlive(request),
                 startTime = Instant.now()
         )
@@ -31,14 +34,12 @@ class HttpServerHandler(
             return
         }
 
-        if (HttpMethod.GET != request.method()) {
+        if (HttpMethod.GET != requestContext.requestMethod) {
             requestContext.sendError(HttpResponseStatus.METHOD_NOT_ALLOWED)
             return
         }
 
-        val uri = request.uri()
-
-        val handler = handlerMap[uri]
+        val handler = handlerMap[requestContext.requestUri]
         if (handler == null) {
             requestContext.sendError(HttpResponseStatus.NOT_FOUND)
         } else {

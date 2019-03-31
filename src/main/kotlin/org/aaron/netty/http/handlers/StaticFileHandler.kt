@@ -34,7 +34,7 @@ class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
 private fun respondIfNotModified(requestContext: RequestContext, lastModifiedMS: Long): Boolean {
 
     // Cache Validation
-    val ifModifiedSince = requestContext.request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE)
+    val ifModifiedSince = requestContext.requestHeaders.get(HttpHeaderNames.IF_MODIFIED_SINCE)
     StaticFileHandler.logger.debug { "ifModifiedSince = $ifModifiedSince" }
 
     if (!ifModifiedSince.isNullOrEmpty()) {
