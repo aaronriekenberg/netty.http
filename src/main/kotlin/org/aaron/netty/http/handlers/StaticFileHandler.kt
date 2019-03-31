@@ -92,11 +92,19 @@ private class NonClasspathStaticFileHandler(
         private val filePath: String,
         private val contentType: String) : Handler {
 
+    private val blockingThreadPool = BlockingThreadPoolContainer.blockingThreadPool
+
     init {
         logger.info { "init filePath = $filePath contentType = $contentType" }
     }
 
     override fun handle(requestContext: RequestContext) {
+        blockingThreadPool.execute {
+            handleBlocking(requestContext)
+        }
+    }
+
+    private fun handleBlocking(requestContext: RequestContext) {
 
         val file = File(filePath)
 
@@ -172,6 +180,7 @@ private class NonClasspathStaticFileHandler(
             // Close the connection when the whole content is written out.
             lastContentFuture.addListener(ChannelFutureListener.CLOSE)
         }
+
     }
 
     companion object : KLogging() {

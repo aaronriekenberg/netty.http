@@ -11,7 +11,6 @@ import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
 import java.time.Instant
 import java.time.OffsetDateTime
-import java.util.concurrent.Executors
 
 private data class CommandTemplateData(
         val commandInfo: CommandInfo
@@ -79,10 +78,10 @@ private object CommandRunner : KLogging() {
 
     private val objectMapper = ObjectMapperContainer.objectMapper
 
-    private val runCommandScheduler = Executors.newCachedThreadPool()
+    private val blockingThreadPool = BlockingThreadPoolContainer.blockingThreadPool
 
     fun runCommand(requestContext: RequestContext, commandInfo: CommandInfo, commandAndArgs: List<String>) {
-        runCommandScheduler.execute {
+        blockingThreadPool.execute {
             val commandAPIResult = try {
                 val processBuilder = ProcessBuilder(commandAndArgs)
                 processBuilder.redirectErrorStream(true)
