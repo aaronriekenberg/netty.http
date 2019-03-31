@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.*
+import io.netty.util.AttributeKey
 import io.netty.util.CharsetUtil
 import org.aaron.netty.http.logging.HttpRequestLogger
 import java.text.SimpleDateFormat
@@ -102,6 +103,8 @@ private fun ChannelHandlerContext.sendResponseAndCleanupConnection(
         response: FullHttpResponse,
         keepAlive: Boolean) {
 
+    setHasSentHttpResponse()
+
     val flushPromise = writeAndFlush(response)
 
     if (!keepAlive) {
@@ -179,3 +182,17 @@ private fun statusDropsConnection(status: HttpResponseStatus): Boolean =
             HttpResponseStatus.NOT_IMPLEMENTED -> true
             else -> false
         }
+
+private val HTTP_RESPONSE_SENT_ATTRIBUTE_KEY: AttributeKey<Boolean> = AttributeKey.valueOf("httpResponseSent")
+
+fun ChannelHandlerContext.hasSentHttpResponse(): Boolean {
+    return channel().attr(HTTP_RESPONSE_SENT_ATTRIBUTE_KEY).get() ?: false
+}
+
+fun ChannelHandlerContext.clearHasSentHttpResponse() {
+    channel().attr(HTTP_RESPONSE_SENT_ATTRIBUTE_KEY).set(false)
+}
+
+fun ChannelHandlerContext.setHasSentHttpResponse() {
+    channel().attr(HTTP_RESPONSE_SENT_ATTRIBUTE_KEY).set(true)
+}

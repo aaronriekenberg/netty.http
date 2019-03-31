@@ -100,7 +100,11 @@ private class NonClasspathStaticFileHandler(
 
     override fun handle(requestContext: RequestContext) {
         blockingThreadPool.execute {
-            handleBlocking(requestContext)
+            try {
+                handleBlocking(requestContext)
+            } catch (e: Exception) {
+                logger.warn(e) { "handle" }
+            }
         }
     }
 
@@ -123,6 +127,7 @@ private class NonClasspathStaticFileHandler(
         if (respondIfNotModified(requestContext, file.lastModified())) {
             return
         }
+
         val raf: RandomAccessFile
         try {
             raf = RandomAccessFile(file, "r")
@@ -147,6 +152,8 @@ private class NonClasspathStaticFileHandler(
 
         // Write the initial line and the header.
         HttpRequestLogger.log(requestContext, response)
+
+        ctx.setHasSentHttpResponse()
         ctx.write(response)
 
         // Write the content.

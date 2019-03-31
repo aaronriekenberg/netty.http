@@ -17,6 +17,8 @@ class HttpServerHandler(
 
     public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
 
+        ctx.clearHasSentHttpResponse()
+
         logger.debug { "channelRead0 request=$request" }
 
         val requestContext = RequestContext(
@@ -52,7 +54,7 @@ class HttpServerHandler(
 
         logger.debug(cause) { "exceptionCaught ctx=$ctx" }
 
-        if (ctx.channel().isActive) {
+        if (ctx.channel().isActive && (!ctx.hasSentHttpResponse())) {
             ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
         }
     }
