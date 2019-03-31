@@ -54,8 +54,12 @@ class HttpServerHandler(
 
         logger.debug(cause) { "exceptionCaught ctx=$ctx" }
 
-        if (ctx.channel().isActive && (!ctx.hasSentHttpResponse())) {
-            ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+        if (ctx.channel().isActive) {
+            if (ctx.hasSentHttpResponse()) {
+                ctx.close()
+            } else {
+                ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+            }
         }
     }
 
