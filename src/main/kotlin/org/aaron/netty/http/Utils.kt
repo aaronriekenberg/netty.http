@@ -24,7 +24,7 @@ const val CONTENT_TYPE_TEXT_HTML = "text/html; charset=UTF-8"
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
 
-    setDefaultHeaders(response)
+    response.setDefaultHeaders(keepAlive)
 
     HttpRequestLogger.log(this, response)
 
@@ -39,39 +39,43 @@ fun RequestContext.sendNotModified() {
             HttpVersion.HTTP_1_1,
             HttpResponseStatus.NOT_MODIFIED)
 
-    setDefaultHeaders(response)
+    response.setDefaultHeaders(keepAlive)
 
     HttpRequestLogger.log(this, response)
 
-    ctx.sendResponseAndCleanupConnection(response, keepAlive)
+    ctx.sendResponseAndCleanupConnection(
+            response = response,
+            keepAlive = keepAlive)
 }
 
 
 fun RequestContext.sendError(status: HttpResponseStatus) {
+
+    val keepAliveAfterError = if (statusDropsConnection(status)) false else keepAlive
 
     val response = newDefaultFullHttpResponse(
             status = status,
             body = "Failure: $status\r\n")
 
     response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
-    setDefaultHeaders(response)
+    response.setDefaultHeaders(keepAliveAfterError)
 
     HttpRequestLogger.log(this, response)
 
     ctx.sendResponseAndCleanupConnection(
             response = response,
-            keepAlive = if (statusDropsConnection(status)) false else keepAlive)
+            keepAlive = keepAliveAfterError)
 }
 
-private fun RequestContext.setDefaultHeaders(response: FullHttpResponse) {
+private fun FullHttpResponse.setDefaultHeaders(keepAlive: Boolean) {
 
-    HttpUtil.setContentLength(response, response.content().readableBytes().toLong())
-    response.setDateHeaderIfNotSet()
+    HttpUtil.setContentLength(this, content().readableBytes().toLong())
+    setDateHeaderIfNotSet()
 
     if (!keepAlive) {
         // We're going to close the connection as soon as the response is sent,
         // so we should also make it clear for the client.
-        response.setConnectionCloseHeader()
+        setConnectionCloseHeader()
     }
 }
 
@@ -82,7 +86,7 @@ fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
             body = "Failure: $status\r\n")
 
     response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
-    response.setConnectionCloseHeader()
+    response.setDefaultHeaders(keepAlive = false)
 
     HttpRequestLogger.log(response = response)
 
