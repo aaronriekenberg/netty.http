@@ -5,12 +5,10 @@ import mu.KLogging
 
 data class Environment(
 
-        @param:JsonProperty("env_vars")
-        @get:JsonProperty("env_vars")
+        @field:JsonProperty("env_vars")
         val envVars: Map<String, String>,
 
-        @param:JsonProperty("properties")
-        @get:JsonProperty("properties")
+        @field:JsonProperty("properties")
         val properties: Map<String, String>
 )
 

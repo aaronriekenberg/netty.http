@@ -1,12 +1,12 @@
 package org.aaron.netty.http.handlers
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.*
 import org.aaron.netty.http.config.CommandInfo
+import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
 import java.time.Instant
@@ -62,26 +62,22 @@ class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
 
 private data class CommandAPIResult(
 
-        @param:JsonProperty("command_info")
-        @get:JsonProperty("command_info")
+        @field:JsonProperty("command_info")
         val commandInfo: CommandInfo,
 
-        @param:JsonProperty("now")
-        @get:JsonProperty("now")
+        @field:JsonProperty("now")
         val now: String,
 
-        @param:JsonProperty("output")
-        @get:JsonProperty("output")
+        @field:JsonProperty("output")
         val output: String,
 
-        @param:JsonProperty("exit_value")
-        @get:JsonProperty("exit_value")
+        @field:JsonProperty("exit_value")
         val exitValue: Int
 )
 
 private object CommandRunner : KLogging() {
 
-    private val objectMapper = ObjectMapper()
+    private val objectMapper = ObjectMapperContainer.objectMapper
 
     private val runCommandScheduler = Executors.newCachedThreadPool()
 

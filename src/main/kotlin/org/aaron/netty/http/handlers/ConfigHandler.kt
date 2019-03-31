@@ -1,11 +1,11 @@
 package org.aaron.netty.http.handlers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.*
 import org.aaron.netty.http.config.ConfigContainer
+import org.aaron.netty.http.json.ObjectMapperContainer
 import java.time.Instant
 
 object ConfigHandler : Handler, KLogging() {
@@ -15,7 +15,7 @@ object ConfigHandler : Handler, KLogging() {
     init {
         logger.debug { "begin init" }
 
-        val bodyString = ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(ConfigContainer.config)
+        val bodyString = ObjectMapperContainer.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(ConfigContainer.config)
 
         val lastModifiedString: String = Instant.now().formatHttpDate()
 

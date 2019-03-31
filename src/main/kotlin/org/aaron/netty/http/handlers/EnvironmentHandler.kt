@@ -1,11 +1,11 @@
 package org.aaron.netty.http.handlers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.netty.handler.codec.http.FullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.*
 import org.aaron.netty.http.environment.EnvironmentContainer
+import org.aaron.netty.http.json.ObjectMapperContainer
 import java.time.Instant
 
 object EnvironmentHandler : Handler, KLogging() {
@@ -15,7 +15,7 @@ object EnvironmentHandler : Handler, KLogging() {
     init {
         logger.debug { "begin init" }
 
-        val bodyString = ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(EnvironmentContainer.environment)
+        val bodyString = ObjectMapperContainer.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(EnvironmentContainer.environment)
 
         val lastModifiedString: String = Instant.now().formatHttpDate()
 
