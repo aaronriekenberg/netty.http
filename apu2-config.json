@@ -148,6 +148,14 @@
       ]
     },
     {
+      "id": "netstat_binh",
+      "description": "netstat -binh",
+      "command": "netstat",
+      "args": [
+        "-binh"
+      ]
+    },
+    {
       "id": "netstat_s",
       "description": "netstat -s",
       "command": "netstat",
