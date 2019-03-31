@@ -17,6 +17,7 @@ import mu.KLogging
 import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.*
+import org.aaron.netty.http.netty.HttpServerInitializer
 import kotlin.reflect.KClass
 
 class HttpServerMain {

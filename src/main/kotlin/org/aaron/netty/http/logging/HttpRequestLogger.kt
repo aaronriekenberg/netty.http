@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponse
 import mu.KLogging
-import org.aaron.netty.http.RequestContext
+import org.aaron.netty.http.netty.RequestContext
 import java.time.Duration
 import java.time.Instant
 

@@ -1,6 +1,6 @@
 package org.aaron.netty.http.handlers
 
-import org.aaron.netty.http.RequestContext
+import org.aaron.netty.http.netty.RequestContext
 
 typealias HandlerMap = Map<String, Handler>
 

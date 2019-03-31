@@ -5,9 +5,9 @@ import io.netty.handler.codec.http.*
 import io.netty.handler.ssl.SslHandler
 import io.netty.handler.stream.ChunkedFile
 import mu.KLogging
-import org.aaron.netty.http.*
 import org.aaron.netty.http.config.StaticFileInfo
 import org.aaron.netty.http.logging.HttpRequestLogger
+import org.aaron.netty.http.netty.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.RandomAccessFile
