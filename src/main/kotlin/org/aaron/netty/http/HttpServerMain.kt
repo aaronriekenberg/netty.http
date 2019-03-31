@@ -44,6 +44,8 @@ class HttpServerMain {
 
         map += "/config" to ConfigHandler
 
+        map += "/environment" to EnvironmentHandler
+
         map += config.staticFileInfo.map { it.url to StaticFileHandler(it) }
 
         map += config.commandInfo.map { "/commands/${it.id}" to CommandHTMLHandler(it) }
