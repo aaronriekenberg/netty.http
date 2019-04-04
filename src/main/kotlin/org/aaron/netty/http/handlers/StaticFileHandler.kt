@@ -104,6 +104,7 @@ private class NonClasspathStaticFileHandler(
                 handleBlocking(requestContext)
             } catch (e: Exception) {
                 logger.warn(e) { "handle" }
+                requestContext.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
             }
         }
     }

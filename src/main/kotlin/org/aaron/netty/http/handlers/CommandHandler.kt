@@ -80,38 +80,50 @@ private object CommandRunner : KLogging() {
 
     private val blockingThreadPool = BlockingThreadPoolContainer.blockingThreadPool
 
+    private fun runCommandBlocking(requestContext: RequestContext, commandInfo: CommandInfo, commandAndArgs: List<String>) {
+        val commandAPIResult = try {
+            val processBuilder = ProcessBuilder(commandAndArgs)
+            processBuilder.redirectErrorStream(true)
+            logger.debug { "start process $commandAndArgs" }
+            val process = processBuilder.start()
+            val exitValue = process.waitFor()
+            val output = InputStreamReader(process.inputStream)
+                    .readLines()
+                    .joinToString(separator = "\n")
+            logger.debug { "exitValue = $exitValue" }
+            CommandAPIResult(
+                    commandInfo = commandInfo,
+                    now = OffsetDateTime.now().toString(),
+                    output = output,
+                    exitValue = exitValue)
+        } catch (e: Exception) {
+            logger.warn(e) { "runCommand $commandInfo" }
+            CommandAPIResult(
+                    commandInfo = commandInfo,
+                    now = OffsetDateTime.now().toString(),
+                    output = "command error ${e.message}",
+                    exitValue = -1)
+        }
+
+        val json = objectMapper.writeValueAsString(commandAPIResult)
+
+        val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, json)
+        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
+
+        requestContext.sendResponse(response)
+    }
+
     fun runCommand(requestContext: RequestContext, commandInfo: CommandInfo, commandAndArgs: List<String>) {
         blockingThreadPool.execute {
-            val commandAPIResult = try {
-                val processBuilder = ProcessBuilder(commandAndArgs)
-                processBuilder.redirectErrorStream(true)
-                logger.debug { "start process $commandAndArgs" }
-                val process = processBuilder.start()
-                val exitValue = process.waitFor()
-                val output = InputStreamReader(process.inputStream)
-                        .readLines()
-                        .joinToString(separator = "\n")
-                logger.debug { "exitValue = $exitValue" }
-                CommandAPIResult(
+            try {
+                runCommandBlocking(
+                        requestContext = requestContext,
                         commandInfo = commandInfo,
-                        now = OffsetDateTime.now().toString(),
-                        output = output,
-                        exitValue = exitValue)
+                        commandAndArgs = commandAndArgs)
             } catch (e: Exception) {
-                logger.warn(e) { "runCommand $commandInfo" }
-                CommandAPIResult(
-                        commandInfo = commandInfo,
-                        now = OffsetDateTime.now().toString(),
-                        output = "command error ${e.message}",
-                        exitValue = -1)
+                logger.warn(e) { "runCommand" }
+                requestContext.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
             }
-
-            val json = objectMapper.writeValueAsString(commandAPIResult)
-
-            val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, json)
-            response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-
-            requestContext.sendResponse(response)
         }
     }
 }
