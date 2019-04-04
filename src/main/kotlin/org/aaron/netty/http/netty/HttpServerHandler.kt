@@ -36,7 +36,7 @@ class HttpServerHandler(
             return
         }
 
-        if (HttpMethod.GET != requestContext.requestMethod) {
+        if (requestContext.requestMethod != HttpMethod.GET) {
             requestContext.sendError(HttpResponseStatus.METHOD_NOT_ALLOWED)
             return
         }
@@ -54,12 +54,10 @@ class HttpServerHandler(
 
         logger.debug(cause) { "exceptionCaught ctx=$ctx" }
 
-        if (ctx.channel().isActive) {
-            if (ctx.hasSentHttpResponse()) {
-                ctx.close()
-            } else {
-                ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-            }
+        if (ctx.channel().isActive && (!ctx.hasSentHttpResponse())) {
+            ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+        } else {
+            ctx.close()
         }
     }
 
