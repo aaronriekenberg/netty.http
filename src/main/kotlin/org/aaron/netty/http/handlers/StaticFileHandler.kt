@@ -173,7 +173,7 @@ private class NonClasspathStaticFileHandler(
         if (logger.isDebugEnabled) {
             sendFileFuture.addListener(object : ChannelProgressiveFutureListener {
                 override fun operationProgressed(future: ChannelProgressiveFuture, progress: Long, total: Long) {
-                    logger.debug { "${future.channel()} transfer progress= $progress total = $total" }
+                    logger.debug { "${future.channel()} transfer progress=$progress total=$total" }
                 }
 
                 override fun operationComplete(future: ChannelProgressiveFuture) {
