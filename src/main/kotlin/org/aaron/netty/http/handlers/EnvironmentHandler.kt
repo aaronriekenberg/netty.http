@@ -10,6 +10,8 @@ import java.time.Instant
 
 object EnvironmentHandler : Handler, KLogging() {
 
+    private val lastModified: Instant = Instant.now()
+
     private val response: FullHttpResponse
 
     init {
@@ -17,17 +19,19 @@ object EnvironmentHandler : Handler, KLogging() {
 
         val bodyString = ObjectMapperContainer.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(EnvironmentContainer.environment)
 
-        val lastModifiedString: String = Instant.now().formatHttpDate()
-
         response = newDefaultFullHttpResponse(HttpResponseStatus.OK, bodyString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
-        response.setLastModifiedHeader(lastModifiedString)
+        response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) = requestContext.sendResponse(response.retainedDuplicate())
+    override fun handle(requestContext: RequestContext) {
+        if (!requestContext.respondIfNotModified(lastModified)) {
+            requestContext.sendResponse(response.retainedDuplicate())
+        }
+    }
 
 }

@@ -183,7 +183,7 @@ private val HTTP_DATE_FORMATTER = DateTimeFormatter.ofPattern(HTTP_DATE_FORMAT).
 
 fun String.parseHttpDate(): OffsetDateTime = ZonedDateTime.parse(this, HTTP_DATE_FORMATTER).toOffsetDateTime()
 
-fun Instant.formatHttpDate(): String = OffsetDateTime.ofInstant(this, HTTP_DATE_GMT_ZONE_ID).format(HTTP_DATE_FORMATTER)
+fun Instant.formatHttpDate(): String = ZonedDateTime.ofInstant(this, HTTP_DATE_GMT_ZONE_ID).format(HTTP_DATE_FORMATTER)
 
 fun HttpResponse.setDateHeaderIfNotSet() {
     if (!headers().contains(HttpHeaderNames.DATE)) {
@@ -192,11 +192,7 @@ fun HttpResponse.setDateHeaderIfNotSet() {
 }
 
 fun HttpResponse.setLastModifiedHeader(instant: Instant) {
-    setLastModifiedHeader(instant.formatHttpDate())
-}
-
-fun HttpResponse.setLastModifiedHeader(string: String) {
-    headers().set(HttpHeaderNames.LAST_MODIFIED, string)
+    headers().set(HttpHeaderNames.LAST_MODIFIED, instant.formatHttpDate())
 }
 
 private const val HTTP_CACHE_SECONDS = 60

@@ -20,6 +20,8 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
     companion object : KLogging()
 
+    private val lastModified: Instant = Instant.now()
+
     private val response: DefaultFullHttpResponse
 
     init {
@@ -33,18 +35,20 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
         val htmlString = commandTemplate.apply(commandTemplateData)
 
-        val lastModifiedString = Instant.now().formatHttpDate()
-
         response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
-        response.setLastModifiedHeader(lastModifiedString)
+        response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) = requestContext.sendResponse(response.retainedDuplicate())
+    override fun handle(requestContext: RequestContext) {
+        if (!requestContext.respondIfNotModified(lastModified)) {
+            requestContext.sendResponse(response.retainedDuplicate())
+        }
+    }
 
 }
 

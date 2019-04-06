@@ -22,6 +22,8 @@ private data class IndexTemplateData(
 
 object IndexHandler : Handler, KLogging() {
 
+    private val lastModified: Instant = Instant.now()
+
     private val response: DefaultFullHttpResponse
 
     init {
@@ -29,9 +31,6 @@ object IndexHandler : Handler, KLogging() {
 
         val indexTemplate = HandlebarsContainer.handlebars.compile("index")
         val config = ConfigContainer.config
-
-        val lastModified: Instant = Instant.now()
-        val lastModifiedString = lastModified.formatHttpDate()
 
         val indexTemplateData = IndexTemplateData(
                 mainPageInfo = config.mainPageInfo,
@@ -45,13 +44,16 @@ object IndexHandler : Handler, KLogging() {
         response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
-        response.setLastModifiedHeader(lastModifiedString)
+        response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) = requestContext.sendResponse(response.retainedDuplicate())
-
+    override fun handle(requestContext: RequestContext) {
+        if (!requestContext.respondIfNotModified(lastModified)) {
+            requestContext.sendResponse(response.retainedDuplicate())
+        }
+    }
 
 }
