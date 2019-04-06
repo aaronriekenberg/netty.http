@@ -70,12 +70,12 @@ fun RequestContext.respondIfNotModified(lastModified: Instant): Boolean {
         logger.debug { "ifModifiedSince = $ifModifiedSince" }
 
         if (!ifModifiedSince.isNullOrEmpty()) {
-            val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
-            logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
+            val ifModifiedSinceDateTime = ifModifiedSince.parseHttpDate()
+            logger.debug { "ifModifiedSinceDateTime = $ifModifiedSinceDateTime" }
 
             // Only compare up to the second because the datetime format we send to the client
             // does not have milliseconds
-            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.toEpochSecond()
+            val ifModifiedSinceDateSeconds = ifModifiedSinceDateTime.toEpochSecond()
             val lastModifiedSeconds = lastModified.epochSecond
             if (ifModifiedSinceDateSeconds == lastModifiedSeconds) {
                 sendNotModified()
