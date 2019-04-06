@@ -32,7 +32,7 @@ object HttpServerMain : KLogging() {
     }
 
     fun run() {
-        val startTime = Instant.now()
+        val runStartTime = Instant.now()
 
         logger.info { "begin run" }
 
@@ -58,7 +58,7 @@ object HttpServerMain : KLogging() {
                     .sync().channel()
 
             logger.info {
-                "server started on ${ch.localAddress()} in ${startTime.getDeltaTimeSinceSecondsString()}s"
+                "server started on ${ch.localAddress()} in ${runStartTime.getDeltaTimeSinceSecondsString()}s"
             }
 
             ch.closeFuture().sync()

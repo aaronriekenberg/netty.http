@@ -6,6 +6,7 @@ import io.netty.handler.ssl.SslHandler
 import io.netty.handler.stream.ChunkedFile
 import mu.KLogging
 import org.aaron.netty.http.config.StaticFileInfo
+import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.logging.HttpRequestLogger
 import org.aaron.netty.http.netty.*
 import java.io.File
@@ -36,7 +37,7 @@ private class ClasspathStaticFileHandler(
 
     companion object : KLogging()
 
-    private val lastModified = Instant.now()
+    private val lastModified = getStartTime()
 
     private val response: DefaultFullHttpResponse
 

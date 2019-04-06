@@ -7,6 +7,7 @@ import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.config.MainPageInfo
 import org.aaron.netty.http.config.StaticFileInfo
+import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.netty.*
 import org.aaron.netty.http.templates.HandlebarsContainer
 import java.time.Instant
@@ -22,7 +23,7 @@ private data class IndexTemplateData(
 
 object IndexHandler : Handler, KLogging() {
 
-    private val lastModified: Instant = Instant.now()
+    private val lastModified: Instant = getStartTime()
 
     private val response: DefaultFullHttpResponse
 

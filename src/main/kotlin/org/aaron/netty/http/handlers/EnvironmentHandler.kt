@@ -4,13 +4,14 @@ import io.netty.handler.codec.http.FullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.environment.EnvironmentContainer
+import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
 import java.time.Instant
 
 object EnvironmentHandler : Handler, KLogging() {
 
-    private val lastModified: Instant = Instant.now()
+    private val lastModified: Instant = getStartTime()
 
     private val response: FullHttpResponse
 

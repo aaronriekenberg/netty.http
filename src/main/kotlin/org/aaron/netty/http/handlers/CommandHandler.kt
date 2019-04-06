@@ -5,6 +5,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KLogging
 import org.aaron.netty.http.config.CommandInfo
+import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
 import org.aaron.netty.http.templates.HandlebarsContainer
@@ -20,7 +21,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
 
     companion object : KLogging()
 
-    private val lastModified: Instant = Instant.now()
+    private val lastModified: Instant = getStartTime()
 
     private val response: DefaultFullHttpResponse
 
