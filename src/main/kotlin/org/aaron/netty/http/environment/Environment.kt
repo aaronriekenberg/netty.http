@@ -1,12 +1,15 @@
 package org.aaron.netty.http.environment
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import mu.KLogging
 import java.time.Instant
 
 data class Environment(
 
         @field:JsonProperty("start_time")
+        @field:JsonSerialize(using = ToStringSerializer::class)
         val startTime: Instant,
 
         @field:JsonProperty("env_vars")
