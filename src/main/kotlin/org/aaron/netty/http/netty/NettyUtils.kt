@@ -17,9 +17,11 @@ import io.netty.handler.codec.http.*
 import io.netty.util.AttributeKey
 import io.netty.util.CharsetUtil
 import org.aaron.netty.http.logging.HttpRequestLogger
-import java.text.SimpleDateFormat
 import java.time.Instant
-import java.util.*
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
 fun createEventLoopGroup(threads: Int = 0): MultithreadEventLoopGroup =
@@ -147,28 +149,21 @@ fun newDefaultFullHttpResponse(status: HttpResponseStatus, body: ByteArray) =
                 Unpooled.copiedBuffer(body))
 
 private const val HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz"
-private const val HTTP_DATE_GMT_TIMEZONE = "GMT"
+private val HTTP_DATE_GMT_ZONE_ID = ZoneId.of("GMT")
+private val HTTP_DATE_FORMATTER = DateTimeFormatter.ofPattern(HTTP_DATE_FORMAT).withZone(HTTP_DATE_GMT_ZONE_ID)
 
-private val HTTP_DATE_FORMATTER = object : ThreadLocal<SimpleDateFormat>() {
-    override fun initialValue(): SimpleDateFormat {
-        val simpleDateFormat = SimpleDateFormat(HTTP_DATE_FORMAT)
-        simpleDateFormat.timeZone = TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE)
-        return simpleDateFormat
-    }
-}
+fun String.parseHttpDate(): OffsetDateTime = ZonedDateTime.parse(this, HTTP_DATE_FORMATTER).toOffsetDateTime()
 
-fun String.parseHttpDate(): Date = HTTP_DATE_FORMATTER.get().parse(this)
+fun Instant.formatHttpDate(): String = OffsetDateTime.ofInstant(this, HTTP_DATE_GMT_ZONE_ID).format(HTTP_DATE_FORMATTER)
 
-fun Instant.formatHttpDate(): String = HTTP_DATE_FORMATTER.get().format(Date(toEpochMilli()))
-
-fun HttpResponse.setDateHeaderIfNotSet(date: Date? = null) {
+fun HttpResponse.setDateHeaderIfNotSet() {
     if (!headers().contains(HttpHeaderNames.DATE)) {
-        headers().set(HttpHeaderNames.DATE, HTTP_DATE_FORMATTER.get().format(date ?: Date()))
+        headers().set(HttpHeaderNames.DATE, Instant.now().formatHttpDate())
     }
 }
 
-fun HttpResponse.setLastModifiedHeader(date: Date) {
-    headers().set(HttpHeaderNames.LAST_MODIFIED, HTTP_DATE_FORMATTER.get().format(date))
+fun HttpResponse.setLastModifiedHeader(instant: Instant) {
+    setLastModifiedHeader(instant.formatHttpDate())
 }
 
 fun HttpResponse.setLastModifiedHeader(string: String) {

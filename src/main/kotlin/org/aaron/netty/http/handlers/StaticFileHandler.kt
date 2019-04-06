@@ -12,7 +12,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.RandomAccessFile
 import java.time.Instant
-import java.util.*
 
 class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
 
@@ -33,22 +32,26 @@ class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
 
 private fun respondIfNotModified(requestContext: RequestContext, lastModifiedMS: Long): Boolean {
 
-    // Cache Validation
-    val ifModifiedSince = requestContext.requestHeaders.get(HttpHeaderNames.IF_MODIFIED_SINCE)
-    StaticFileHandler.logger.debug { "ifModifiedSince = $ifModifiedSince" }
+    try {
+        // Cache Validation
+        val ifModifiedSince = requestContext.requestHeaders.get(HttpHeaderNames.IF_MODIFIED_SINCE)
+        StaticFileHandler.logger.debug { "ifModifiedSince = $ifModifiedSince" }
 
-    if (!ifModifiedSince.isNullOrEmpty()) {
-        val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
-        StaticFileHandler.logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
+        if (!ifModifiedSince.isNullOrEmpty()) {
+            val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
+            StaticFileHandler.logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
 
-        // Only compare up to the second because the datetime format we send to the client
-        // does not have milliseconds
-        val ifModifiedSinceDateSeconds = ifModifiedSinceDate.time / 1_000L
-        val fileLastModifiedSeconds = lastModifiedMS / 1_000L
-        if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
-            requestContext.sendNotModified()
-            return true
+            // Only compare up to the second because the datetime format we send to the client
+            // does not have milliseconds
+            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.toEpochSecond()
+            val fileLastModifiedSeconds = lastModifiedMS / 1_000L
+            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
+                requestContext.sendNotModified()
+                return true
+            }
         }
+    } catch (e: Exception) {
+        StaticFileHandler.logger.warn(e) { "respondIfNotModified" }
     }
     return false
 }
@@ -145,7 +148,7 @@ private class NonClasspathStaticFileHandler(
         response.setContentTypeHeader(contentType)
         response.setDateHeaderIfNotSet()
         response.setCacheControlHeader()
-        response.setLastModifiedHeader(Date(file.lastModified()))
+        response.setLastModifiedHeader(Instant.ofEpochMilli(file.lastModified()))
 
         if (!requestContext.keepAlive) {
             response.setConnectionCloseHeader()
