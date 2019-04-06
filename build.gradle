@@ -37,15 +37,15 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.jknack:handlebars:$handlebars_version"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
-    implementation "io.netty:netty-all:$netty_version"
+    implementation group: 'com.github.jknack', name: 'handlebars', version: "${handlebars_version}"
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jackson_version}"
+    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: "${jackson_version}"
+    implementation group: 'io.netty', name: 'netty-all', version: "${netty_version}"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j_version}"
     implementation group: 'com.lmax', name: 'disruptor', version: "${lmax_version}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "io.github.microutils:kotlin-logging:$kotlin_logging_version"
-    testImplementation "junit:junit:$junit_version"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: "${kotlin_version}"
+    implementation group: 'io.github.microutils', name: 'kotlin-logging', version: "${kotlin_logging_version}"
+    testImplementation group: 'junit', name: 'junit', version: "${junit_version}"
 }
 
 compileKotlin {
