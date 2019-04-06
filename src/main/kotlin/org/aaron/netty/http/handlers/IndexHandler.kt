@@ -2,17 +2,17 @@ package org.aaron.netty.http.handlers
 
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.config.MainPageInfo
 import org.aaron.netty.http.config.StaticFileInfo
-import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.netty.*
 import org.aaron.netty.http.templates.HandlebarsContainer
-import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
+
+private val logger = KotlinLogging.logger {}
 
 private data class IndexTemplateData(
         val mainPageInfo: MainPageInfo,
@@ -21,9 +21,7 @@ private data class IndexTemplateData(
         val lastModified: String
 )
 
-object IndexHandler : Handler, KLogging() {
-
-    private val lastModified: Instant = getStartTime()
+object IndexHandler : RespondIfNotModifiedHandler() {
 
     private val response: DefaultFullHttpResponse
 
@@ -51,10 +49,8 @@ object IndexHandler : Handler, KLogging() {
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) {
-        if (!requestContext.respondIfNotModified(lastModified)) {
-            requestContext.sendResponse(response.retainedDuplicate())
-        }
+    override fun handleModified(requestContext: RequestContext) {
+        requestContext.sendResponse(response.retainedDuplicate())
     }
 
 }

@@ -32,5 +32,3 @@ object EnvironmentContainer : KLogging() {
     }
 
 }
-
-fun getStartTime(): Instant = EnvironmentContainer.environment.startTime

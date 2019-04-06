@@ -2,16 +2,14 @@ package org.aaron.netty.http.handlers
 
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.config.ConfigContainer
-import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
-import java.time.Instant
 
-object ConfigHandler : Handler, KLogging() {
+private val logger = KotlinLogging.logger {}
 
-    private val lastModified: Instant = getStartTime()
+object ConfigHandler : RespondIfNotModifiedHandler() {
 
     private val response: DefaultFullHttpResponse
 
@@ -29,10 +27,8 @@ object ConfigHandler : Handler, KLogging() {
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) {
-        if (!requestContext.respondIfNotModified(lastModified)) {
-            requestContext.sendResponse(response.retainedDuplicate())
-        }
+    override fun handleModified(requestContext: RequestContext) {
+        requestContext.sendResponse(response.retainedDuplicate())
     }
 
 }

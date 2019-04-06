@@ -3,25 +3,21 @@ package org.aaron.netty.http.handlers
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
-import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
 import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
-import java.time.Instant
 import java.time.OffsetDateTime
+
+private val logger = KotlinLogging.logger {}
 
 private data class CommandTemplateData(
         val commandInfo: CommandInfo
 )
 
-class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
-
-    companion object : KLogging()
-
-    private val lastModified: Instant = getStartTime()
+class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler() {
 
     private val response: DefaultFullHttpResponse
 
@@ -45,17 +41,13 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : Handler {
         logger.debug { "end init" }
     }
 
-    override fun handle(requestContext: RequestContext) {
-        if (!requestContext.respondIfNotModified(lastModified)) {
-            requestContext.sendResponse(response.retainedDuplicate())
-        }
+    override fun handleModified(requestContext: RequestContext) {
+        requestContext.sendResponse(response.retainedDuplicate())
     }
 
 }
 
 class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
-
-    companion object : KLogging()
 
     private val commandAndArgs = listOf(commandInfo.command) + commandInfo.args
 
@@ -79,7 +71,7 @@ private data class CommandAPIResult(
         val exitValue: Int
 )
 
-private object CommandRunner : KLogging() {
+private object CommandRunner {
 
     private val objectMapper = ObjectMapperContainer.objectMapper
 

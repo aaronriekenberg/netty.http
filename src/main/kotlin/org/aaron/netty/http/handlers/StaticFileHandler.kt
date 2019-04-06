@@ -4,9 +4,8 @@ import io.netty.channel.*
 import io.netty.handler.codec.http.*
 import io.netty.handler.ssl.SslHandler
 import io.netty.handler.stream.ChunkedFile
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.config.StaticFileInfo
-import org.aaron.netty.http.environment.getStartTime
 import org.aaron.netty.http.logging.HttpRequestLogger
 import org.aaron.netty.http.netty.*
 import java.io.File
@@ -14,9 +13,9 @@ import java.io.FileNotFoundException
 import java.io.RandomAccessFile
 import java.time.Instant
 
-class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
+private val logger = KotlinLogging.logger {}
 
-    companion object : KLogging()
+class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
 
     private val delegate: Handler = if (staticFileInfo.classpath) {
         ClasspathStaticFileHandler(
@@ -33,11 +32,7 @@ class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
 
 private class ClasspathStaticFileHandler(
         filePath: String,
-        private val contentType: String) : Handler {
-
-    companion object : KLogging()
-
-    private val lastModified = getStartTime()
+        private val contentType: String) : RespondIfNotModifiedHandler() {
 
     private val response: DefaultFullHttpResponse
 
@@ -55,16 +50,10 @@ private class ClasspathStaticFileHandler(
         response.setLastModifiedHeader(lastModified)
     }
 
-    override fun handle(requestContext: RequestContext) {
-
-        if (requestContext.respondIfNotModified(lastModified)) {
-            return
-        }
-
+    override fun handleModified(requestContext: RequestContext) {
         requestContext.sendResponse(response.retainedDuplicate())
     }
 }
-
 
 private class NonClasspathStaticFileHandler(
         private val filePath: String,
@@ -170,7 +159,7 @@ private class NonClasspathStaticFileHandler(
 
     }
 
-    companion object : KLogging() {
+    companion object {
         private const val CHUNK_SIZE = 8_192
     }
 }
