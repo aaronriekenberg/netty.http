@@ -12,9 +12,7 @@ import org.aaron.netty.http.netty.createEventLoopGroup
 import org.aaron.netty.http.netty.serverSocketChannelClass
 import java.time.Instant
 
-class HttpServerMain {
-
-    companion object : KLogging()
+object HttpServerMain : KLogging() {
 
     private fun handlerMap(config: Config): HandlerMap {
         var map: HandlerMap = mapOf()
@@ -72,5 +70,5 @@ class HttpServerMain {
 }
 
 fun main() {
-    HttpServerMain().run()
+    HttpServerMain.run()
 }
