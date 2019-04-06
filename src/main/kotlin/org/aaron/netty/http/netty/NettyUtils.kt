@@ -19,7 +19,6 @@ import io.netty.util.CharsetUtil
 import mu.KotlinLogging
 import org.aaron.netty.http.logging.HttpRequestLogger
 import java.time.Instant
-import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -181,7 +180,7 @@ private const val HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz"
 private val HTTP_DATE_GMT_ZONE_ID = ZoneId.of("GMT")
 private val HTTP_DATE_FORMATTER = DateTimeFormatter.ofPattern(HTTP_DATE_FORMAT).withZone(HTTP_DATE_GMT_ZONE_ID)
 
-fun String.parseHttpDate(): OffsetDateTime = ZonedDateTime.parse(this, HTTP_DATE_FORMATTER).toOffsetDateTime()
+fun String.parseHttpDate(): ZonedDateTime = ZonedDateTime.parse(this, HTTP_DATE_FORMATTER)
 
 fun Instant.formatHttpDate(): String = ZonedDateTime.ofInstant(this, HTTP_DATE_GMT_ZONE_ID).format(HTTP_DATE_FORMATTER)
 
