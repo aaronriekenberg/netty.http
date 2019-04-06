@@ -16,6 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.http.*
 import io.netty.util.AttributeKey
 import io.netty.util.CharsetUtil
+import mu.KotlinLogging
 import org.aaron.netty.http.logging.HttpRequestLogger
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -23,6 +24,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
+
+private val logger = KotlinLogging.logger {}
 
 fun createEventLoopGroup(threads: Int = 0): MultithreadEventLoopGroup =
         when {
@@ -58,6 +61,32 @@ fun RequestContext.sendResponse(
     ctx.sendResponseAndCleanupConnection(
             response = response,
             keepAlive = keepAlive)
+}
+
+fun RequestContext.respondIfNotModified(lastModified: Instant): Boolean {
+
+    try {
+        // Cache Validation
+        val ifModifiedSince = requestHeaders.get(HttpHeaderNames.IF_MODIFIED_SINCE)
+        logger.debug { "ifModifiedSince = $ifModifiedSince" }
+
+        if (!ifModifiedSince.isNullOrEmpty()) {
+            val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
+            logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
+
+            // Only compare up to the second because the datetime format we send to the client
+            // does not have milliseconds
+            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.toEpochSecond()
+            val lastModifiedSeconds = lastModified.epochSecond
+            if (ifModifiedSinceDateSeconds == lastModifiedSeconds) {
+                sendNotModified()
+                return true
+            }
+        }
+    } catch (e: Exception) {
+        logger.warn(e) { "respondIfNotModified" }
+    }
+    return false
 }
 
 fun RequestContext.sendNotModified() {

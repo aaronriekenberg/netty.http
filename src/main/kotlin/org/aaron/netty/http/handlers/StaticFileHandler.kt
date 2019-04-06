@@ -30,32 +30,6 @@ class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
     override fun handle(requestContext: RequestContext) = delegate.handle(requestContext)
 }
 
-private fun respondIfNotModified(requestContext: RequestContext, lastModifiedMS: Long): Boolean {
-
-    try {
-        // Cache Validation
-        val ifModifiedSince = requestContext.requestHeaders.get(HttpHeaderNames.IF_MODIFIED_SINCE)
-        StaticFileHandler.logger.debug { "ifModifiedSince = $ifModifiedSince" }
-
-        if (!ifModifiedSince.isNullOrEmpty()) {
-            val ifModifiedSinceDate = ifModifiedSince.parseHttpDate()
-            StaticFileHandler.logger.debug { "ifModifiedSinceDate = $ifModifiedSinceDate" }
-
-            // Only compare up to the second because the datetime format we send to the client
-            // does not have milliseconds
-            val ifModifiedSinceDateSeconds = ifModifiedSinceDate.toEpochSecond()
-            val fileLastModifiedSeconds = lastModifiedMS / 1_000L
-            if (ifModifiedSinceDateSeconds == fileLastModifiedSeconds) {
-                requestContext.sendNotModified()
-                return true
-            }
-        }
-    } catch (e: Exception) {
-        StaticFileHandler.logger.warn(e) { "respondIfNotModified" }
-    }
-    return false
-}
-
 private class ClasspathStaticFileHandler(
         filePath: String,
         private val contentType: String) : Handler {
@@ -77,12 +51,12 @@ private class ClasspathStaticFileHandler(
 
         response.setContentTypeHeader(contentType)
         response.setCacheControlHeader()
-        response.setLastModifiedHeader(lastModified.formatHttpDate())
+        response.setLastModifiedHeader(lastModified)
     }
 
     override fun handle(requestContext: RequestContext) {
 
-        if (respondIfNotModified(requestContext, lastModified.toEpochMilli())) {
+        if (requestContext.respondIfNotModified(lastModified)) {
             return
         }
 
@@ -128,7 +102,8 @@ private class NonClasspathStaticFileHandler(
             return
         }
 
-        if (respondIfNotModified(requestContext, file.lastModified())) {
+        val fileLastModifiedInstant = Instant.ofEpochMilli(file.lastModified())
+        if (requestContext.respondIfNotModified(fileLastModifiedInstant)) {
             return
         }
 
@@ -148,7 +123,7 @@ private class NonClasspathStaticFileHandler(
         response.setContentTypeHeader(contentType)
         response.setDateHeaderIfNotSet()
         response.setCacheControlHeader()
-        response.setLastModifiedHeader(Instant.ofEpochMilli(file.lastModified()))
+        response.setLastModifiedHeader(fileLastModifiedInstant)
 
         if (!requestContext.keepAlive) {
             response.setConnectionCloseHeader()
