@@ -3,11 +3,13 @@ package org.aaron.netty.http.logging
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponse
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.getDeltaTimeSinceSecondsString
 import org.aaron.netty.http.netty.RequestContext
 
-object HttpRequestLogger : KLogging() {
+private val logger = KotlinLogging.logger {}
+
+object HttpRequestLogger {
 
     private fun formatRemoteAddress(ctx: ChannelHandlerContext): String {
         val remoteAddress = ctx.channel()?.remoteAddress()

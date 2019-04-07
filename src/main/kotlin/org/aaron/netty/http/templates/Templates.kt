@@ -2,9 +2,11 @@ package org.aaron.netty.http.templates
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
-import mu.KLogging
+import mu.KotlinLogging
 
-object HandlebarsContainer : KLogging() {
+private val logger = KotlinLogging.logger {}
+
+object HandlebarsContainer {
 
     val handlebars: Handlebars
 

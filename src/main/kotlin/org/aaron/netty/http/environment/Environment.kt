@@ -3,8 +3,10 @@ package org.aaron.netty.http.environment
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
-import mu.KLogging
+import mu.KotlinLogging
 import java.time.Instant
+
+private val logger = KotlinLogging.logger {}
 
 data class Environment(
 
@@ -19,7 +21,7 @@ data class Environment(
         val properties: Map<String, String>
 )
 
-object EnvironmentContainer : KLogging() {
+object EnvironmentContainer {
 
     val environment = Environment(
             startTime = Instant.now(),

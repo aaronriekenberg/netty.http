@@ -3,7 +3,7 @@ package org.aaron.netty.http
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.*
@@ -12,7 +12,9 @@ import org.aaron.netty.http.netty.createEventLoopGroup
 import org.aaron.netty.http.netty.serverSocketChannelClass
 import java.time.Instant
 
-object HttpServerMain : KLogging() {
+private val logger = KotlinLogging.logger {}
+
+object HttpServerMain {
 
     private fun handlerMap(config: Config): HandlerMap {
         var map: HandlerMap = mapOf()

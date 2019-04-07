@@ -2,9 +2,11 @@ package org.aaron.netty.http.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.module.kotlin.readValue
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.json.ObjectMapperContainer
 import java.io.File
+
+private val logger = KotlinLogging.logger {}
 
 data class ServerInfo(
 
@@ -73,7 +75,7 @@ data class Config(
 )
 
 
-object ConfigContainer : KLogging() {
+object ConfigContainer {
 
     val config: Config
 

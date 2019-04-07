@@ -14,7 +14,7 @@ interface Handler {
 abstract class RespondIfNotModifiedHandler(
         protected val lastModified: Instant = EnvironmentContainer.environment.startTime) : Handler {
 
-    abstract fun handleModified(requestContext: RequestContext)
+    protected abstract fun handleModified(requestContext: RequestContext)
 
     final override fun handle(requestContext: RequestContext) {
         if (!requestContext.respondIfNotModified(lastModified)) {

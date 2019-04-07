@@ -6,14 +6,14 @@ import io.netty.handler.codec.http.FullHttpRequest
 import io.netty.handler.codec.http.HttpMethod
 import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.HttpUtil
-import mu.KLogging
+import mu.KotlinLogging
 import org.aaron.netty.http.handlers.HandlerMap
 import java.time.Instant
 
+private val logger = KotlinLogging.logger {}
+
 class HttpServerHandler(
         private val handlerMap: HandlerMap) : SimpleChannelInboundHandler<FullHttpRequest>() {
-
-    companion object : KLogging()
 
     public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
 
