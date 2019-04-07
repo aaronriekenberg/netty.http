@@ -57,9 +57,6 @@ class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
 
 private data class CommandAPIResult(
 
-        @field:JsonProperty("command_info")
-        val commandInfo: CommandInfo,
-
         @field:JsonProperty("output_lines")
         val outputLines: List<String>,
 
@@ -88,14 +85,12 @@ private object CommandRunner {
             val outputLines = InputStreamReader(process.inputStream).readLines()
 
             CommandAPIResult(
-                    commandInfo = commandInfo,
                     outputLines = outputLines,
                     exitValue = exitValue)
         } catch (e: Exception) {
             logger.warn(e) { "runCommand $commandInfo" }
 
             CommandAPIResult(
-                    commandInfo = commandInfo,
                     outputLines = listOf("command error ${e.message}"),
                     exitValue = -1)
         }

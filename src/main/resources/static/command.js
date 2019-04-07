@@ -1,3 +1,5 @@
+const commandTextSymbol = Symbol('commandText');
+
 const xRequest = new XMLHttpRequest();
 
 const updatePre = (text) => {
@@ -10,12 +12,8 @@ const updatePre = (text) => {
 xRequest.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         const responseObject = JSON.parse(xRequest.responseText);
-        let command = responseObject.command_info.command;
-        for (const arg of (responseObject.command_info.args || [])) {
-          command += ` ${arg}`;
-        }
         let preText = `Now: ${new Date()}\n\n`;
-        preText += `$ ${command}\n\n`;
+        preText += `$ ${xRequest.commandTextSymbol}\n\n`;
         for (const outputLine of (responseObject.output_lines || [])) {
             preText += `${outputLine}\n`;
         }
@@ -40,6 +38,8 @@ const setTimer = (apiPath) => {
 };
 
 const onload = (commandText, apiPath) => {
+    xRequest.commandTextSymbol = commandText;
+
     let preText = `Now: ${new Date()}\n\n`;
     preText += `$ ${commandText}`;
     updatePre(preText);
