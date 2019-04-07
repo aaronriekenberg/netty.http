@@ -60,8 +60,8 @@ private data class CommandAPIResult(
         @field:JsonProperty("command_info")
         val commandInfo: CommandInfo,
 
-        @field:JsonProperty("output")
-        val output: String,
+        @field:JsonProperty("output_lines")
+        val outputLines: List<String>,
 
         @field:JsonProperty("exit_value")
         val exitValue: Int
@@ -75,24 +75,28 @@ private object CommandRunner {
 
     private fun runCommandBlocking(requestContext: RequestContext, commandInfo: CommandInfo, commandAndArgs: List<String>) {
         val commandAPIResult = try {
+
             val processBuilder = ProcessBuilder(commandAndArgs)
             processBuilder.redirectErrorStream(true)
-            logger.debug { "start process $commandAndArgs" }
+
             val process = processBuilder.start()
+            logger.debug { "started process $commandAndArgs $process" }
+
             val exitValue = process.waitFor()
-            val output = InputStreamReader(process.inputStream)
-                    .readLines()
-                    .joinToString(separator = "\n")
             logger.debug { "exitValue = $exitValue" }
+
+            val outputLines = InputStreamReader(process.inputStream).readLines()
+
             CommandAPIResult(
                     commandInfo = commandInfo,
-                    output = output,
+                    outputLines = outputLines,
                     exitValue = exitValue)
         } catch (e: Exception) {
             logger.warn(e) { "runCommand $commandInfo" }
+
             CommandAPIResult(
                     commandInfo = commandInfo,
-                    output = "command error ${e.message}",
+                    outputLines = listOf("command error ${e.message}"),
                     exitValue = -1)
         }
 
