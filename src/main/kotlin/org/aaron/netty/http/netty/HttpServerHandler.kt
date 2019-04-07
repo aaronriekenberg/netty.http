@@ -17,6 +17,8 @@ class HttpServerHandler(
 
     public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
 
+        val startTime = Instant.now()
+
         ctx.clearHasSentHttpResponse()
 
         logger.debug { "channelRead0 request=$request" }
@@ -28,7 +30,7 @@ class HttpServerHandler(
                 requestHeaders = request.headers().copy(),
                 protocolVersion = request.protocolVersion(),
                 keepAlive = HttpUtil.isKeepAlive(request),
-                startTime = Instant.now()
+                startTime = startTime
         )
 
         if (!request.decoderResult().isSuccess) {
