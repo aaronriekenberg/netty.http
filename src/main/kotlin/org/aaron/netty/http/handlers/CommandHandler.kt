@@ -9,7 +9,6 @@ import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
 import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
-import java.time.OffsetDateTime
 
 private val logger = KotlinLogging.logger {}
 
@@ -61,9 +60,6 @@ private data class CommandAPIResult(
         @field:JsonProperty("command_info")
         val commandInfo: CommandInfo,
 
-        @field:JsonProperty("now")
-        val now: String,
-
         @field:JsonProperty("output")
         val output: String,
 
@@ -90,14 +86,12 @@ private object CommandRunner {
             logger.debug { "exitValue = $exitValue" }
             CommandAPIResult(
                     commandInfo = commandInfo,
-                    now = OffsetDateTime.now().toString(),
                     output = output,
                     exitValue = exitValue)
         } catch (e: Exception) {
             logger.warn(e) { "runCommand $commandInfo" }
             CommandAPIResult(
                     commandInfo = commandInfo,
-                    now = OffsetDateTime.now().toString(),
                     output = "command error ${e.message}",
                     exitValue = -1)
         }

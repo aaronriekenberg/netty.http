@@ -14,7 +14,7 @@ xRequest.onreadystatechange = function () {
         for (const arg of (responseObject.command_info.args || [])) {
           command += ` ${arg}`;
         }
-        let preText = `Now: ${responseObject.now}\n\n`;
+        let preText = `Now: ${new Date()}\n\n`;
         preText += `$ ${command}\n\n`;
         preText += responseObject.output;
         updatePre(preText);
