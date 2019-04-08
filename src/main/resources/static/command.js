@@ -11,9 +11,9 @@ const updatePre = (text) => {
 
 xRequest.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-        const responseObject = JSON.parse(xRequest.responseText);
+        const responseObject = JSON.parse(this.responseText);
         let preText = `Now: ${new Date()}\n\n`;
-        preText += `$ ${xRequest.commandTextSymbol}\n\n`;
+        preText += `$ ${this.commandTextSymbol}\n\n`;
         for (const outputLine of (responseObject.output_lines || [])) {
             preText += `${outputLine}\n`;
         }
