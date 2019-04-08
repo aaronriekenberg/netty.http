@@ -43,7 +43,7 @@ private class ClasspathStaticFileHandler(
 
         logger.info { "init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size}" }
 
-        response = newDefaultFullHttpResponse(HttpResponseStatus.OK, fileBuffer)
+        response = newDefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, fileBuffer)
 
         response.setContentTypeHeader(contentType)
         response.setCacheControlHeader()
@@ -51,7 +51,7 @@ private class ClasspathStaticFileHandler(
     }
 
     override fun handleModified(requestContext: RequestContext) {
-        requestContext.sendResponse(response.retainedDuplicate())
+        requestContext.sendRetainedDuplicate(response)
     }
 }
 

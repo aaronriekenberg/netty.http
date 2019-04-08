@@ -2,6 +2,7 @@ package org.aaron.netty.http.handlers
 
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.HttpVersion
 import mu.KotlinLogging
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.json.ObjectMapperContainer
@@ -18,7 +19,7 @@ object ConfigHandler : RespondIfNotModifiedHandler() {
 
         val bodyString = ObjectMapperContainer.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(ConfigContainer.config)
 
-        response = newDefaultFullHttpResponse(HttpResponseStatus.OK, bodyString)
+        response = newDefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, bodyString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
         response.setLastModifiedHeader(lastModified)
@@ -28,7 +29,7 @@ object ConfigHandler : RespondIfNotModifiedHandler() {
     }
 
     override fun handleModified(requestContext: RequestContext) {
-        requestContext.sendResponse(response.retainedDuplicate())
+        requestContext.sendRetainedDuplicate(response)
     }
 
 }

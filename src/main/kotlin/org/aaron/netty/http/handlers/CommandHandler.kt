@@ -3,6 +3,7 @@ package org.aaron.netty.http.handlers
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.HttpVersion
 import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.json.ObjectMapperContainer
@@ -31,7 +32,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler
 
         val htmlString = commandTemplate.apply(commandTemplateData)
 
-        response = newDefaultFullHttpResponse(HttpResponseStatus.OK, htmlString)
+        response = newDefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModified)
@@ -41,7 +42,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler
     }
 
     override fun handleModified(requestContext: RequestContext) {
-        requestContext.sendResponse(response.retainedDuplicate())
+        requestContext.sendRetainedDuplicate(response)
     }
 
 }
@@ -97,7 +98,7 @@ private object CommandRunner {
 
         val json = objectMapper.writeValueAsString(commandAPIResult)
 
-        val response = newDefaultFullHttpResponse(HttpResponseStatus.OK, json)
+        val response = newDefaultFullHttpResponse(requestContext.protocolVersion, HttpResponseStatus.OK, json)
         response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
 
         requestContext.sendResponse(response)
