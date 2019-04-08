@@ -50,6 +50,8 @@ data class RequestContext(
         val startTime: Instant
 )
 
+val DEFAULT_PROTOCOL_VERSION = HttpVersion.HTTP_1_1!!
+
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
 
@@ -62,8 +64,14 @@ fun RequestContext.sendResponse(
             keepAlive = keepAlive)
 }
 
-fun RequestContext.sendRetainedDuplicate(response: FullHttpResponse) =
-        sendResponse(response.retainedDuplicate().setProtocolVersion(protocolVersion))
+fun RequestContext.sendRetainedDuplicate(response: FullHttpResponse) {
+    sendResponse(
+            response = if (response.protocolVersion() == this.protocolVersion) {
+                response.retainedDuplicate()
+            } else {
+                response.retainedDuplicate().setProtocolVersion(protocolVersion)
+            })
+}
 
 fun RequestContext.respondIfNotModified(lastModified: Instant): Boolean {
 
@@ -141,7 +149,7 @@ private fun FullHttpResponse.setDefaultHeaders(keepAlive: Boolean) {
 fun ChannelHandlerContext.sendError(status: HttpResponseStatus) {
 
     val response = newDefaultFullHttpResponse(
-            protocolVersion = HttpVersion.HTTP_1_1,
+            protocolVersion = DEFAULT_PROTOCOL_VERSION,
             status = status,
             body = "Failure: $status\r\n")
 

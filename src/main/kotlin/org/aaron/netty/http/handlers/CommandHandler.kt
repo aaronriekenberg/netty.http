@@ -3,7 +3,6 @@ package org.aaron.netty.http.handlers
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
-import io.netty.handler.codec.http.HttpVersion
 import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.json.ObjectMapperContainer
@@ -32,7 +31,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler
 
         val htmlString = commandTemplate.apply(commandTemplateData)
 
-        response = newDefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, htmlString)
+        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModified)

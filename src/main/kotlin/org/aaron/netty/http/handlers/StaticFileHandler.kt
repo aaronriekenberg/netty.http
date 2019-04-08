@@ -43,7 +43,7 @@ private class ClasspathStaticFileHandler(
 
         logger.info { "init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size}" }
 
-        response = newDefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, fileBuffer)
+        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, fileBuffer)
 
         response.setContentTypeHeader(contentType)
         response.setCacheControlHeader()

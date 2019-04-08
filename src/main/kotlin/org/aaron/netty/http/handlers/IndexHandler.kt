@@ -2,7 +2,6 @@ package org.aaron.netty.http.handlers
 
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
-import io.netty.handler.codec.http.HttpVersion
 import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.config.ConfigContainer
@@ -41,7 +40,7 @@ object IndexHandler : RespondIfNotModifiedHandler() {
 
         val htmlString = indexTemplate.apply(indexTemplateData)
 
-        response = newDefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, htmlString)
+        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModified)
