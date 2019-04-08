@@ -53,6 +53,7 @@ data class RequestContext(
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
 
+    response.protocolVersion = protocolVersion
     response.setDefaultHeaders(keepAlive)
 
     HttpRequestLogger.log(this, response)
@@ -91,7 +92,7 @@ fun RequestContext.respondIfNotModified(lastModified: Instant): Boolean {
 fun RequestContext.sendNotModified() {
 
     val response = DefaultFullHttpResponse(
-            HttpVersion.HTTP_1_1,
+            protocolVersion,
             HttpResponseStatus.NOT_MODIFIED)
 
     response.setDefaultHeaders(keepAlive)
@@ -109,6 +110,7 @@ fun RequestContext.sendError(status: HttpResponseStatus) {
     val keepAliveAfterError = if (status.dropsConnection()) false else keepAlive
 
     val response = newDefaultFullHttpResponse(
+            protocolVersion = protocolVersion,
             status = status,
             body = "Failure: $status\r\n")
 
@@ -164,15 +166,21 @@ private fun ChannelHandlerContext.sendResponseAndCleanupConnection(
     }
 }
 
-fun newDefaultFullHttpResponse(status: HttpResponseStatus, body: String) =
+fun newDefaultFullHttpResponse(
+        status: HttpResponseStatus,
+        body: String,
+        protocolVersion: HttpVersion = HttpVersion.HTTP_1_1) =
         DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1,
+                protocolVersion,
                 status,
                 Unpooled.copiedBuffer(body, CharsetUtil.UTF_8))
 
-fun newDefaultFullHttpResponse(status: HttpResponseStatus, body: ByteArray) =
+fun newDefaultFullHttpResponse(
+        status: HttpResponseStatus,
+        body: ByteArray,
+        protocolVersion: HttpVersion = HttpVersion.HTTP_1_1) =
         DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1,
+                protocolVersion,
                 status,
                 Unpooled.copiedBuffer(body))
 

@@ -107,7 +107,7 @@ private class NonClasspathStaticFileHandler(
 
         val fileLength = raf.length()
 
-        val response = DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
+        val response = DefaultHttpResponse(requestContext.protocolVersion, HttpResponseStatus.OK)
 
         HttpUtil.setContentLength(response, fileLength)
         response.setContentTypeHeader(contentType)

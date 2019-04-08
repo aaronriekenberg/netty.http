@@ -27,6 +27,13 @@
       "classpath": true,
       "content_type": "image/x-icon",
       "include_in_main_page": false
+    },
+    {
+      "url": "/google.png",
+      "file_path": "/Users/z001jy9/google.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": true
     }
   ],
   "command_info": [
