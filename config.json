@@ -49,7 +49,9 @@
       "id": "ls",
       "description": "ls",
       "command": "ls",
-      "args": []
+      "args": [
+        "-latrh"
+      ]
     }
   ]
 }
