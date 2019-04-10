@@ -9,9 +9,7 @@ object BlockingThreadPoolContainer {
     private val threadNumber = AtomicInteger(0)
 
     val blockingThreadPool: ExecutorService = Executors.newCachedThreadPool { runnable ->
-        val thread = Thread(runnable)
-
-        thread.name = "BlockingThreadPool-${threadNumber.getAndIncrement()}"
+        val thread = Thread(null, runnable, "BlockingThreadPool-${threadNumber.getAndIncrement()}", 0)
 
         if (thread.isDaemon) {
             thread.isDaemon = false
