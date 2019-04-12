@@ -6,10 +6,10 @@ buildscript {
         handlebars_version = '4.1.2'
         jackson_version = '2.9.8'
         junit_version = '4.12'
-        kotlin_version = '1.3.21'
-        kotlin_logging_version = '1.6.25'
+        kotlin_version = '1.3.30'
+        kotlin_logging_version = '1.6.26'
         lmax_version = '3.4.2'
-        log4j_version = '2.11.1'
+        log4j_version = '2.11.2'
         netty_version = '4.1.34.Final'
         shadow_version = '5.0.0'
     }
