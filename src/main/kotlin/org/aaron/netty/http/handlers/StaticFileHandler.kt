@@ -15,9 +15,9 @@ import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
 
-class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
+fun newStaticFileHandler(staticFileInfo: StaticFileInfo): Handler {
 
-    private val delegate: Handler = if (staticFileInfo.classpath) {
+    return if (staticFileInfo.classpath) {
         ClasspathStaticFileHandler(
                 filePath = staticFileInfo.filePath,
                 contentType = staticFileInfo.contentType)
@@ -27,7 +27,6 @@ class StaticFileHandler(staticFileInfo: StaticFileInfo) : Handler {
                 contentType = staticFileInfo.contentType)
     }
 
-    override fun handle(requestContext: RequestContext) = delegate.handle(requestContext)
 }
 
 private class ClasspathStaticFileHandler(
@@ -41,7 +40,7 @@ private class ClasspathStaticFileHandler(
             it.readBytes()
         }
 
-        logger.info { "init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size}" }
+        logger.info { "ClasspathStaticFileHandler.init filePath = $filePath contentType = $contentType fileBuffer.size = ${fileBuffer.size}" }
 
         response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, fileBuffer)
 
@@ -62,7 +61,7 @@ private class NonClasspathStaticFileHandler(
     private val blockingThreadPool = BlockingThreadPoolContainer.blockingThreadPool
 
     init {
-        logger.info { "init filePath = $filePath contentType = $contentType" }
+        logger.info { "NonClasspathStaticFileHandler.init filePath = $filePath contentType = $contentType" }
     }
 
     override fun handle(requestContext: RequestContext) {

@@ -25,7 +25,7 @@ object HttpServerMain {
 
         map += "/environment" to EnvironmentHandler
 
-        map += config.staticFileInfo.map { it.url to StaticFileHandler(it) }
+        map += config.staticFileInfo.map { it.url to newStaticFileHandler(it) }
 
         map += config.commandInfo.map { "/commands/${it.id}" to CommandHTMLHandler(it) }
         map += config.commandInfo.map { "/api/commands/${it.id}" to CommandAPIHandler(it) }
