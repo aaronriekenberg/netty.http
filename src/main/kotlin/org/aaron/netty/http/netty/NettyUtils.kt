@@ -65,11 +65,12 @@ fun RequestContext.sendResponse(
 }
 
 fun RequestContext.sendRetainedDuplicate(response: FullHttpResponse) {
+    val retainedDuplicate = response.retainedDuplicate()
     sendResponse(
-            response = if (response.protocolVersion() == this.protocolVersion) {
-                response.retainedDuplicate()
+            response = if (retainedDuplicate.protocolVersion() == this.protocolVersion) {
+                retainedDuplicate
             } else {
-                response.retainedDuplicate().setProtocolVersion(protocolVersion)
+                retainedDuplicate.setProtocolVersion(protocolVersion)
             })
 }
 
