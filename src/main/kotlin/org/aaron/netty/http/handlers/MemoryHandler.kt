@@ -5,6 +5,8 @@ import io.netty.handler.codec.http.HttpResponseStatus
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
 import java.lang.management.ManagementFactory
+import java.lang.management.MemoryPoolMXBean
+import java.lang.management.MemoryType
 import java.lang.management.MemoryUsage
 
 private data class MemoryUsageResponse(
@@ -30,6 +32,24 @@ private fun MemoryUsage.toMemoryUsageResponse(): MemoryUsageResponse =
                 usedBytes = used
         )
 
+private data class MemoryPoolResponse(
+
+        @field:JsonProperty("name")
+        val name: String,
+
+        @field:JsonProperty("type")
+        val type: MemoryType,
+
+        @field:JsonProperty("usage")
+        val usage: MemoryUsageResponse
+)
+
+private fun MemoryPoolMXBean.toMemoryPoolResponse(): MemoryPoolResponse =
+        MemoryPoolResponse(
+                name = name,
+                type = type,
+                usage = usage.toMemoryUsageResponse()
+        )
 
 private data class MemoryHandlerResponse(
 
@@ -37,19 +57,24 @@ private data class MemoryHandlerResponse(
         val heapMemoryUsage: MemoryUsageResponse,
 
         @field:JsonProperty("non_heap_memory_usage")
-        val nonHeapMemoryUsage: MemoryUsageResponse
+        val nonHeapMemoryUsage: MemoryUsageResponse,
+
+        @field:JsonProperty("memory_pools")
+        val memoryPools: List<MemoryPoolResponse>
 )
 
 object MemoryHandler : Handler {
 
-    private val memoryMXBean = ManagementFactory.getMemoryMXBean()
 
     private val objectMapper = ObjectMapperContainer.objectMapper
 
     override fun handle(requestContext: RequestContext) {
+        val memoryMXBean = ManagementFactory.getMemoryMXBean()
+
         val memoryHandlerResponse = MemoryHandlerResponse(
                 heapMemoryUsage = memoryMXBean.heapMemoryUsage.toMemoryUsageResponse(),
-                nonHeapMemoryUsage = memoryMXBean.nonHeapMemoryUsage.toMemoryUsageResponse()
+                nonHeapMemoryUsage = memoryMXBean.nonHeapMemoryUsage.toMemoryUsageResponse(),
+                memoryPools = ManagementFactory.getMemoryPoolMXBeans().map { it.toMemoryPoolResponse() }
         )
 
         val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(memoryHandlerResponse)
