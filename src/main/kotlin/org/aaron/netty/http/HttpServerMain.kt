@@ -22,11 +22,13 @@ object HttpServerMain {
 
         map += "/" to IndexHandler
 
-        map += "/config" to ConfigHandler
+        map += "/debug/config" to ConfigHandler
 
-        map += "/environment" to EnvironmentHandler
+        map += "/debug/environment" to EnvironmentHandler
 
-        map += "/memory" to MemoryHandler
+        map += "/debug/gc" to GCHandler
+
+        map += "/debug/memory" to MemoryHandler
 
         map += config.staticFileInfo.map { it.url to newStaticFileHandler(it) }
 

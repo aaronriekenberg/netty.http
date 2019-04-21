@@ -65,7 +65,6 @@ private data class MemoryHandlerResponse(
 
 object MemoryHandler : Handler {
 
-
     private val objectMapper = ObjectMapperContainer.objectMapper
 
     override fun handle(requestContext: RequestContext) {
