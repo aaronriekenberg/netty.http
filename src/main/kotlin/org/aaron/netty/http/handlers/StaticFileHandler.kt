@@ -8,10 +8,10 @@ import mu.KotlinLogging
 import org.aaron.netty.http.config.StaticFileInfo
 import org.aaron.netty.http.logging.HttpRequestLogger
 import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.utils.getLastModifiedInstant
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.RandomAccessFile
-import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
 
@@ -91,7 +91,7 @@ private class NonClasspathStaticFileHandler(
             return
         }
 
-        val fileLastModifiedInstant = Instant.ofEpochMilli(file.lastModified())
+        val fileLastModifiedInstant = file.getLastModifiedInstant()
         if (requestContext.respondIfNotModified(fileLastModifiedInstant)) {
             return
         }

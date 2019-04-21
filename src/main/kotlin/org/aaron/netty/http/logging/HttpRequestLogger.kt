@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponse
 import mu.KotlinLogging
-import org.aaron.netty.http.getDeltaTimeSinceSecondsString
+import org.aaron.netty.http.utils.getDeltaTimeSinceSecondsString
 import org.aaron.netty.http.netty.RequestContext
 
 private val logger = KotlinLogging.logger {}
