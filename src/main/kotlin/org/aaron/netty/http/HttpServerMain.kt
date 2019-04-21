@@ -26,6 +26,8 @@ object HttpServerMain {
 
         map += "/environment" to EnvironmentHandler
 
+        map += "/memory" to MemoryHandler
+
         map += config.staticFileInfo.map { it.url to newStaticFileHandler(it) }
 
         map += config.commandInfo.map { "/commands/${it.id}" to CommandHTMLHandler(it) }
@@ -51,20 +53,19 @@ object HttpServerMain {
         logger.info { "handlerMap.size=${handlerMap.size}" }
 
         try {
-            val b = ServerBootstrap()
-            b.group(bossGroup, workerGroup)
+            val serverChannel = ServerBootstrap()
+                    .group(bossGroup, workerGroup)
                     .channel(serverSocketChannelClass().java)
                     .handler(LoggingHandler(LogLevel.DEBUG))
                     .childHandler(HttpServerInitializer(handlerMap))
-
-            val ch = b.bind(config.serverInfo.listenAddress, config.serverInfo.listenPort)
+                    .bind(config.serverInfo.listenAddress, config.serverInfo.listenPort)
                     .sync().channel()
 
             logger.info {
-                "server started on ${ch.localAddress()} in ${runStartTime.getDeltaTimeSinceSecondsString()}s"
+                "server started on ${serverChannel.localAddress()} in ${runStartTime.getDeltaTimeSinceSecondsString()}s"
             }
 
-            ch.closeFuture().sync()
+            serverChannel.closeFuture().sync()
         } finally {
             bossGroup.shutdownGracefully()
             workerGroup.shutdownGracefully()

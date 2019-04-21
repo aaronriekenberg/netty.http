@@ -20,7 +20,7 @@ object ConfigHandler : RespondIfNotModifiedHandler() {
 
         response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, bodyString)
 
-        response.setContentTypeHeader(CONTENT_TYPE_TEXT_PLAIN)
+        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
         response.setLastModifiedHeader(lastModified)
         response.setCacheControlHeader()
 
