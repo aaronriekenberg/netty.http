@@ -1,7 +1,8 @@
-package org.aaron.netty.http.handlers
+package org.aaron.netty.http.handlers.debug
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.netty.handler.codec.http.HttpResponseStatus
+import org.aaron.netty.http.handlers.Handler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.*
 import java.lang.management.ManagementFactory

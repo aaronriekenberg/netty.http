@@ -7,6 +7,10 @@ import mu.KotlinLogging
 import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.*
+import org.aaron.netty.http.handlers.debug.ConfigHandler
+import org.aaron.netty.http.handlers.debug.EnvironmentHandler
+import org.aaron.netty.http.handlers.debug.GCHandler
+import org.aaron.netty.http.handlers.debug.MemoryHandler
 import org.aaron.netty.http.netty.HttpServerInitializer
 import org.aaron.netty.http.netty.createEventLoopGroup
 import org.aaron.netty.http.netty.serverSocketChannelClass
