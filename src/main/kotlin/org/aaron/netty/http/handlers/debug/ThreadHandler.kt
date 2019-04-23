@@ -46,8 +46,14 @@ private fun ThreadInfo.toThreadInfoResponse(): ThreadInfoResponse =
 
 private data class ThreadHandlerResponse(
 
-        @field:JsonProperty("num_threads")
-        val numThreads: Int,
+        @field:JsonProperty("thread_count")
+        val threadCount: Int,
+
+        @field:JsonProperty("peak_thread_count")
+        val peakThreadCount: Int,
+
+        @field:JsonProperty("total_started_thread_count")
+        val totalStartedThreadCount: Long,
 
         @field:JsonProperty("thread_info")
         val threadInfo: List<ThreadInfoResponse>
@@ -61,7 +67,9 @@ object ThreadHandler : Handler {
         val threadMXBean = ManagementFactory.getThreadMXBean()
 
         val threadHandlerResponse = ThreadHandlerResponse(
-                numThreads = threadMXBean.threadCount,
+                threadCount = threadMXBean.threadCount,
+                peakThreadCount = threadMXBean.peakThreadCount,
+                totalStartedThreadCount = threadMXBean.totalStartedThreadCount,
                 threadInfo = threadMXBean.getThreadInfo(threadMXBean.allThreadIds)
                         .filterNotNull()
                         .map { it.toThreadInfoResponse() }
