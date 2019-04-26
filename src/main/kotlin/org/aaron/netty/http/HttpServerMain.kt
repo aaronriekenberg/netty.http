@@ -7,7 +7,7 @@ import mu.KotlinLogging
 import org.aaron.netty.http.config.Config
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.*
-import org.aaron.netty.http.handlers.debug.*
+import org.aaron.netty.http.handlers.debug.debugHandlerMap
 import org.aaron.netty.http.netty.HttpServerInitializer
 import org.aaron.netty.http.netty.createEventLoopGroup
 import org.aaron.netty.http.netty.serverSocketChannelClass
@@ -23,20 +23,12 @@ object HttpServerMain {
 
         map += "/" to IndexHandler
 
-        map += "/debug/config" to ConfigHandler
-
-        map += "/debug/environment" to EnvironmentHandler
-
-        map += "/debug/gc" to GCHandler
-
-        map += "/debug/memory" to MemoryHandler
-
-        map += "/debug/thread" to ThreadHandler
-
         map += config.staticFileInfo.map { it.url to newStaticFileHandler(it) }
 
         map += config.commandInfo.map { "/commands/${it.id}" to CommandHTMLHandler(it) }
         map += config.commandInfo.map { "/api/commands/${it.id}" to CommandAPIHandler(it) }
+
+        map += debugHandlerMap()
 
         return map
     }
