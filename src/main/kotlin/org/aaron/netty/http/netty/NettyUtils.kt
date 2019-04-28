@@ -52,6 +52,15 @@ data class RequestContext(
 
 val DEFAULT_PROTOCOL_VERSION = HttpVersion.HTTP_1_1!!
 
+fun RequestContext.sendJSONResponseOK(
+        json: String) {
+
+    val response = newDefaultFullHttpResponse(protocolVersion, HttpResponseStatus.OK, json)
+    response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
+
+    this.sendResponse(response)
+}
+
 fun RequestContext.sendResponse(
         response: FullHttpResponse) {
 

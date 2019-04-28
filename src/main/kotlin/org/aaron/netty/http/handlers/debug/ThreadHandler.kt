@@ -1,12 +1,27 @@
 package org.aaron.netty.http.handlers.debug
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.netty.handler.codec.http.HttpResponseStatus
+import mu.KotlinLogging
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.templates.HandlebarsContainer
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
+
+private val logger = KotlinLogging.logger {}
+
+fun createThreadHandlers(): List<Pair<String, Handler>> =
+        listOf(
+                "/debug/thread" to ThreadHTMLHandler,
+                "/api/debug/thread" to ThreadAPIHandler
+        )
+
+private object ThreadHTMLHandler : TemplateHTMLHandler(
+        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateData = mapOf("id" to "thread"))
 
 private data class ThreadInfoResponse(
 
@@ -59,7 +74,7 @@ private data class ThreadHandlerResponse(
         val threadInfo: List<ThreadInfoResponse>
 )
 
-object ThreadHandler : Handler {
+private object ThreadAPIHandler : Handler {
 
     private val objectMapper = ObjectMapperContainer.objectMapper
 
@@ -75,11 +90,9 @@ object ThreadHandler : Handler {
                         .map { it.toThreadInfoResponse() }
                         .sortedBy { it.id }
         )
+        
         val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(threadHandlerResponse)
 
-        val response = newDefaultFullHttpResponse(requestContext.protocolVersion, HttpResponseStatus.OK, json)
-        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-
-        requestContext.sendResponse(response)
+        requestContext.sendJSONResponseOK(json)
     }
 }

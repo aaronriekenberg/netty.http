@@ -1,34 +1,29 @@
 package org.aaron.netty.http.handlers.debug
 
-import io.netty.handler.codec.http.DefaultFullHttpResponse
-import io.netty.handler.codec.http.HttpResponseStatus
-import mu.KotlinLogging
 import org.aaron.netty.http.config.ConfigContainer
-import org.aaron.netty.http.handlers.RespondIfNotModifiedHandler
+import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.templates.HandlebarsContainer
 
-private val logger = KotlinLogging.logger {}
+fun createConfigHandlers(): List<Pair<String, Handler>> =
+        listOf(
+                "/debug/config" to ConfigHTMLHandler,
+                "/api/debug/config" to ConfigAPIHandler
+        )
 
-object ConfigHandler : RespondIfNotModifiedHandler() {
+private object ConfigHTMLHandler : TemplateHTMLHandler(
+        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateData = mapOf("id" to "config"))
 
-    private val response: DefaultFullHttpResponse
+private object ConfigAPIHandler : Handler {
 
-    init {
-        logger.debug { "begin init" }
+    private val configJSON = ObjectMapperContainer.objectMapper.writeValueAsString(ConfigContainer.config)
 
-        val bodyString = ObjectMapperContainer.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(ConfigContainer.config)
-
-        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, bodyString)
-
-        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-        response.setLastModifiedHeader(lastModified)
-
-        logger.debug { "end init" }
-    }
-
-    override fun handleModified(requestContext: RequestContext) {
-        requestContext.sendRetainedDuplicate(response)
+    override fun handle(requestContext: RequestContext) {
+        requestContext.sendJSONResponseOK(configJSON)
     }
 
 }

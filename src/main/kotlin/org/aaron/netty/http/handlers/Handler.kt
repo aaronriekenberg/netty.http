@@ -1,8 +1,10 @@
 package org.aaron.netty.http.handlers
 
+import com.github.jknack.handlebars.Template
+import io.netty.handler.codec.http.DefaultFullHttpResponse
+import io.netty.handler.codec.http.HttpResponseStatus
 import org.aaron.netty.http.environment.EnvironmentContainer
-import org.aaron.netty.http.netty.RequestContext
-import org.aaron.netty.http.netty.respondIfNotModified
+import org.aaron.netty.http.netty.*
 import java.time.Instant
 
 typealias HandlerMap = Map<String, Handler>
@@ -20,6 +22,29 @@ abstract class RespondIfNotModifiedHandler(
         if (!requestContext.respondIfNotModified(lastModified)) {
             handleModified(requestContext)
         }
+    }
+
+}
+
+abstract class TemplateHTMLHandler(
+        template: Template,
+        templateData: Any
+) : RespondIfNotModifiedHandler() {
+
+    private val response: DefaultFullHttpResponse
+
+    init {
+        val htmlString = template.apply(templateData)
+
+        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, htmlString)
+
+        response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
+        response.setLastModifiedHeader(lastModified)
+        response.setCacheControlHeader()
+    }
+
+    final override fun handleModified(requestContext: RequestContext) {
+        requestContext.sendRetainedDuplicate(response)
     }
 
 }

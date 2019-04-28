@@ -1,14 +1,29 @@
 package org.aaron.netty.http.handlers.debug
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.netty.handler.codec.http.HttpResponseStatus
+import mu.KotlinLogging
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.templates.HandlebarsContainer
 import java.lang.management.ManagementFactory
 import java.lang.management.MemoryPoolMXBean
 import java.lang.management.MemoryType
 import java.lang.management.MemoryUsage
+
+private val logger = KotlinLogging.logger {}
+
+fun createMemoryHandlers(): List<Pair<String, Handler>> =
+        listOf(
+                "/debug/memory" to MemoryHTMLHandler,
+                "/api/debug/memory" to MemoryAPIHandler
+        )
+
+private object MemoryHTMLHandler : TemplateHTMLHandler(
+        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateData = mapOf("id" to "memory"))
 
 private data class MemoryUsageResponse(
 
@@ -64,7 +79,7 @@ private data class MemoryHandlerResponse(
         val memoryPools: List<MemoryPoolResponse>
 )
 
-object MemoryHandler : Handler {
+private object MemoryAPIHandler : Handler {
 
     private val objectMapper = ObjectMapperContainer.objectMapper
 
@@ -77,12 +92,9 @@ object MemoryHandler : Handler {
                 memoryPools = ManagementFactory.getMemoryPoolMXBeans().map { it.toMemoryPoolResponse() }
         )
 
-        val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(memoryHandlerResponse)
+        val json = objectMapper.writeValueAsString(memoryHandlerResponse)
 
-        val response = newDefaultFullHttpResponse(requestContext.protocolVersion, HttpResponseStatus.OK, json)
-        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-
-        requestContext.sendResponse(response)
+        requestContext.sendJSONResponseOK(json)
     }
 
 }

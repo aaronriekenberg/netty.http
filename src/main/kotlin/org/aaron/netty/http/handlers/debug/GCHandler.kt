@@ -1,12 +1,27 @@
 package org.aaron.netty.http.handlers.debug
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.netty.handler.codec.http.HttpResponseStatus
+import mu.KotlinLogging
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.templates.HandlebarsContainer
 import java.lang.management.GarbageCollectorMXBean
 import java.lang.management.ManagementFactory
+
+private val logger = KotlinLogging.logger {}
+
+fun createGCHandlers(): List<Pair<String, Handler>> =
+        listOf(
+                "/debug/gc" to GCHTMLHandler,
+                "/api/debug/gc" to GCAPIHandler
+        )
+
+private object GCHTMLHandler : TemplateHTMLHandler(
+        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateData = mapOf("id" to "gc"))
 
 private data class GCResponse(
 
@@ -37,7 +52,7 @@ private data class GCHandlerResponse(
         val gcResponses: List<GCResponse>
 )
 
-object GCHandler : Handler {
+private object GCAPIHandler : Handler {
 
     private val objectMapper = ObjectMapperContainer.objectMapper
 
@@ -47,12 +62,9 @@ object GCHandler : Handler {
         val gcHandlerResponse = GCHandlerResponse(
                 gcResponses = gcMXBeans.map { it.toGCResponse() }
         )
-        val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(gcHandlerResponse)
+        val json = objectMapper.writeValueAsString(gcHandlerResponse)
 
-        val response = newDefaultFullHttpResponse(requestContext.protocolVersion, HttpResponseStatus.OK, json)
-        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-
-        requestContext.sendResponse(response)
+        requestContext.sendJSONResponseOK(json)
     }
 
 }

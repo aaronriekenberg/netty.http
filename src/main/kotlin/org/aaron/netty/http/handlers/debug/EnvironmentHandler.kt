@@ -1,34 +1,29 @@
 package org.aaron.netty.http.handlers.debug
 
-import io.netty.handler.codec.http.FullHttpResponse
-import io.netty.handler.codec.http.HttpResponseStatus
-import mu.KotlinLogging
 import org.aaron.netty.http.environment.EnvironmentContainer
-import org.aaron.netty.http.handlers.RespondIfNotModifiedHandler
+import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.templates.HandlebarsContainer
 
-private val logger = KotlinLogging.logger {}
+fun createEnvironmentHandlers(): List<Pair<String, Handler>> =
+        listOf(
+                "/debug/environment" to EnvironmentHTMLHandler,
+                "/api/debug/environment" to EnvironmentAPIHandler
+        )
 
-object EnvironmentHandler : RespondIfNotModifiedHandler() {
+private object EnvironmentHTMLHandler : TemplateHTMLHandler(
+        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateData = mapOf("id" to "environment"))
 
-    private val response: FullHttpResponse
+private object EnvironmentAPIHandler : Handler {
 
-    init {
-        logger.debug { "begin init" }
+    private val environmentJSON = ObjectMapperContainer.objectMapper.writeValueAsString(EnvironmentContainer.environment)
 
-        val bodyString = ObjectMapperContainer.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(EnvironmentContainer.environment)
-
-        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, bodyString)
-
-        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-        response.setLastModifiedHeader(lastModified)
-
-        logger.debug { "end init" }
-    }
-
-    override fun handleModified(requestContext: RequestContext) {
-        requestContext.sendRetainedDuplicate(response)
+    override fun handle(requestContext: RequestContext) {
+        requestContext.sendJSONResponseOK(environmentJSON)
     }
 
 }
