@@ -3,6 +3,7 @@ package org.aaron.netty.http.handlers.debug
 import com.fasterxml.jackson.annotation.JsonProperty
 import mu.KotlinLogging
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.RequestContext
@@ -13,7 +14,7 @@ import java.lang.management.ManagementFactory
 
 private val logger = KotlinLogging.logger {}
 
-fun createGCHandlers(): List<Pair<String, Handler>> =
+fun createGCHandlers(): HandlerPairList =
         listOf(
                 "/debug/gc" to GCHTMLHandler,
                 "/api/debug/gc" to GCAPIHandler

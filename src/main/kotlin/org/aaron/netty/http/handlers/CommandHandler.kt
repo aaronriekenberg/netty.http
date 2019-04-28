@@ -14,8 +14,8 @@ import java.io.InputStreamReader
 
 private val logger = KotlinLogging.logger {}
 
-fun createHandlersForCommand(commandInfo: CommandInfo): HandlerMap =
-        mapOf(
+fun createHandlersForCommand(commandInfo: CommandInfo): HandlerPairList =
+        listOf(
                 "/commands/${commandInfo.id}" to CommandHTMLHandler(commandInfo),
                 "/api/commands/${commandInfo.id}" to CommandAPIHandler(commandInfo)
         )

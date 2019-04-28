@@ -28,7 +28,7 @@ object HttpServerMain {
 
         map += config.staticFileInfo.map { it.url to newStaticFileHandler(it) }
 
-        map += config.commandInfo.flatMap { createHandlersForCommand(it).toList() }
+        map += config.commandInfo.flatMap { createHandlersForCommand(it) }
 
         map += debugHandlerMap()
 

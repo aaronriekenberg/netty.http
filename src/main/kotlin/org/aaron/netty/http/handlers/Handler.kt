@@ -7,6 +7,7 @@ import org.aaron.netty.http.environment.EnvironmentContainer
 import org.aaron.netty.http.netty.*
 import java.time.Instant
 
+typealias HandlerPairList = List<Pair<String, Handler>>
 typealias HandlerMap = Map<String, Handler>
 
 interface Handler {

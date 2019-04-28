@@ -2,13 +2,14 @@ package org.aaron.netty.http.handlers.debug
 
 import org.aaron.netty.http.environment.EnvironmentContainer
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.RequestContext
 import org.aaron.netty.http.netty.sendJSONResponseOK
 import org.aaron.netty.http.templates.HandlebarsContainer
 
-fun createEnvironmentHandlers(): List<Pair<String, Handler>> =
+fun createEnvironmentHandlers(): HandlerPairList =
         listOf(
                 "/debug/environment" to EnvironmentHTMLHandler,
                 "/api/debug/environment" to EnvironmentAPIHandler

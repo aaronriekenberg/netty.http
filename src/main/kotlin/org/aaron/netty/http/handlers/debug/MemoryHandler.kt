@@ -3,6 +3,7 @@ package org.aaron.netty.http.handlers.debug
 import com.fasterxml.jackson.annotation.JsonProperty
 import mu.KotlinLogging
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.RequestContext
@@ -15,7 +16,7 @@ import java.lang.management.MemoryUsage
 
 private val logger = KotlinLogging.logger {}
 
-fun createMemoryHandlers(): List<Pair<String, Handler>> =
+fun createMemoryHandlers(): HandlerPairList =
         listOf(
                 "/debug/memory" to MemoryHTMLHandler,
                 "/api/debug/memory" to MemoryAPIHandler

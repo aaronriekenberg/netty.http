@@ -3,6 +3,7 @@ package org.aaron.netty.http.handlers.debug
 import com.fasterxml.jackson.annotation.JsonProperty
 import mu.KotlinLogging
 import org.aaron.netty.http.handlers.Handler
+import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.RequestContext
@@ -13,7 +14,7 @@ import java.lang.management.ThreadInfo
 
 private val logger = KotlinLogging.logger {}
 
-fun createThreadHandlers(): List<Pair<String, Handler>> =
+fun createThreadHandlers(): HandlerPairList =
         listOf(
                 "/debug/thread" to ThreadHTMLHandler,
                 "/api/debug/thread" to ThreadAPIHandler
