@@ -17,14 +17,18 @@ private data class GCResponse(
         val collectionCount: Long,
 
         @field:JsonProperty("collection_time_milliseconds")
-        val collectionTimeMilliseconds: Long
+        val collectionTimeMilliseconds: Long,
+
+        @field:JsonProperty("memory_pool_names")
+        val memoryPoolNames: List<String>
 )
 
 private fun GarbageCollectorMXBean.toGCResponse(): GCResponse =
         GCResponse(
                 name = name,
                 collectionCount = collectionCount,
-                collectionTimeMilliseconds = collectionTime
+                collectionTimeMilliseconds = collectionTime,
+                memoryPoolNames = memoryPoolNames.toList()
         )
 
 private data class GCHandlerResponse(

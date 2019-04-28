@@ -16,6 +16,9 @@ private data class ThreadInfoResponse(
         @field:JsonProperty("name")
         val name: String,
 
+        @field:JsonProperty("daemon")
+        val daemon: Boolean,
+
         @field:JsonProperty("in_native")
         val inNative: Boolean,
 
@@ -23,7 +26,10 @@ private data class ThreadInfoResponse(
         val suspended: Boolean,
 
         @field:JsonProperty("state")
-        val state: Thread.State
+        val state: Thread.State,
+
+        @field:JsonProperty("priority")
+        val priority: Int
 
 )
 
@@ -31,9 +37,11 @@ private fun ThreadInfo.toThreadInfoResponse(): ThreadInfoResponse =
         ThreadInfoResponse(
                 id = threadId,
                 name = threadName,
+                daemon = isDaemon,
                 inNative = isInNative,
                 suspended = isSuspended,
-                state = threadState)
+                state = threadState,
+                priority = priority)
 
 
 private data class ThreadHandlerResponse(
