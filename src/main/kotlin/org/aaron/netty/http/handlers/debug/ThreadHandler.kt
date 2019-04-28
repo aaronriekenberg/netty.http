@@ -90,8 +90,8 @@ private object ThreadAPIHandler : Handler {
                         .map { it.toThreadInfoResponse() }
                         .sortedBy { it.id }
         )
-        
-        val json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(threadHandlerResponse)
+
+        val json = objectMapper.writeValueAsString(threadHandlerResponse)
 
         requestContext.sendJSONResponseOK(json)
     }
