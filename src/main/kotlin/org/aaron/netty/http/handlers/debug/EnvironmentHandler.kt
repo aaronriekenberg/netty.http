@@ -23,7 +23,6 @@ object EnvironmentHandler : RespondIfNotModifiedHandler() {
 
         response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
         response.setLastModifiedHeader(lastModified)
-        response.setCacheControlHeader()
 
         logger.debug { "end init" }
     }
