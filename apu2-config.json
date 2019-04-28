@@ -16,6 +16,12 @@
       "include_in_main_page": false
     },
     {
+      "url": "/debug.js",
+      "file_path": "/static/debug.js",
+      "classpath": true,
+      "content_type": "application/javascript"
+    },
+    {
       "url": "/style.css",
       "file_path": "/static/style.css",
       "classpath": true,
