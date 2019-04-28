@@ -12,11 +12,17 @@ import java.io.InputStreamReader
 
 private val logger = KotlinLogging.logger {}
 
+fun createHandlersForCommand(commandInfo: CommandInfo): HandlerMap =
+        mapOf(
+                "/commands/${commandInfo.id}" to CommandHTMLHandler(commandInfo),
+                "/api/commands/${commandInfo.id}" to CommandAPIHandler(commandInfo)
+        )
+
 private data class CommandTemplateData(
         val commandInfo: CommandInfo
 )
 
-class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler() {
+private class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler() {
 
     private val response: DefaultFullHttpResponse
 
@@ -46,7 +52,7 @@ class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler
 
 }
 
-class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
+private class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
 
     private val commandAndArgs = listOf(commandInfo.command) + commandInfo.args
 
