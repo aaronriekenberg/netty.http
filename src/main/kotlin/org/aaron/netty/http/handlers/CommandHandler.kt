@@ -1,12 +1,14 @@
 package org.aaron.netty.http.handlers
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.netty.BlockingThreadPoolContainer
+import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.netty.sendError
+import org.aaron.netty.http.netty.sendJSONResponseOK
 import org.aaron.netty.http.templates.HandlebarsContainer
 import java.io.InputStreamReader
 
@@ -18,39 +20,9 @@ fun createHandlersForCommand(commandInfo: CommandInfo): HandlerMap =
                 "/api/commands/${commandInfo.id}" to CommandAPIHandler(commandInfo)
         )
 
-private data class CommandTemplateData(
-        val commandInfo: CommandInfo
-)
-
-private class CommandHTMLHandler(commandInfo: CommandInfo) : RespondIfNotModifiedHandler() {
-
-    private val response: DefaultFullHttpResponse
-
-    init {
-        logger.debug { "begin init" }
-
-        val commandTemplate = HandlebarsContainer.handlebars.compile("command")
-
-        val commandTemplateData = CommandTemplateData(
-                commandInfo = commandInfo
-        )
-
-        val htmlString = commandTemplate.apply(commandTemplateData)
-
-        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, htmlString)
-
-        response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
-        response.setLastModifiedHeader(lastModified)
-        response.setCacheControlHeader()
-
-        logger.debug { "end init" }
-    }
-
-    override fun handleModified(requestContext: RequestContext) {
-        requestContext.sendRetainedDuplicate(response)
-    }
-
-}
+private class CommandHTMLHandler(commandInfo: CommandInfo) : TemplateHTMLHandler(
+        template = HandlebarsContainer.handlebars.compile("command"),
+        templateData = mapOf("commandInfo" to commandInfo))
 
 private class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {
 
@@ -103,10 +75,7 @@ private object CommandRunner {
 
         val json = objectMapper.writeValueAsString(commandAPIResult)
 
-        val response = newDefaultFullHttpResponse(requestContext.protocolVersion, HttpResponseStatus.OK, json)
-        response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
-
-        requestContext.sendResponse(response)
+        requestContext.sendJSONResponseOK(json)
     }
 
     fun runCommand(requestContext: RequestContext, commandInfo: CommandInfo, commandAndArgs: List<String>) {
