@@ -58,29 +58,28 @@ fun RequestContext.sendJSONResponseOK(
     val response = newDefaultFullHttpResponse(protocolVersion, HttpResponseStatus.OK, json)
     response.setContentTypeHeader(CONTENT_TYPE_APPLICATION_JSON)
 
-    this.sendResponse(response)
-}
-
-fun RequestContext.sendResponse(
-        response: FullHttpResponse) {
-
-    response.setDefaultHeaders(keepAlive)
-
-    HttpRequestLogger.log(this, response)
-
-    ctx.sendResponseAndCleanupConnection(
-            response = response,
-            keepAlive = keepAlive)
+    sendResponse(response)
 }
 
 fun RequestContext.sendRetainedDuplicate(response: FullHttpResponse) {
+
     val retainedDuplicate = response.retainedDuplicate()
+
     sendResponse(
             response = if (retainedDuplicate.protocolVersion() == this.protocolVersion) {
                 retainedDuplicate
             } else {
                 retainedDuplicate.setProtocolVersion(protocolVersion)
             })
+}
+
+fun RequestContext.sendNotModified() {
+
+    val response = DefaultFullHttpResponse(
+            protocolVersion,
+            HttpResponseStatus.NOT_MODIFIED)
+
+    sendResponse(response)
 }
 
 fun RequestContext.respondIfNotModified(lastModified: Instant): Boolean {
@@ -109,11 +108,8 @@ fun RequestContext.respondIfNotModified(lastModified: Instant): Boolean {
     return false
 }
 
-fun RequestContext.sendNotModified() {
-
-    val response = DefaultFullHttpResponse(
-            protocolVersion,
-            HttpResponseStatus.NOT_MODIFIED)
+fun RequestContext.sendResponse(
+        response: FullHttpResponse) {
 
     response.setDefaultHeaders(keepAlive)
 
@@ -123,7 +119,6 @@ fun RequestContext.sendNotModified() {
             response = response,
             keepAlive = keepAlive)
 }
-
 
 fun RequestContext.sendError(status: HttpResponseStatus) {
 
