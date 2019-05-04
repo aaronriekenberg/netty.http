@@ -9,7 +9,7 @@ import org.aaron.netty.http.netty.RequestContext
 import org.aaron.netty.http.netty.sendJSONResponseOK
 import org.aaron.netty.http.templates.HandlebarsContainer
 
-fun createEnvironmentHandlers(): HandlerPairList =
+fun environmentHandlers(): HandlerPairList =
         listOf(
                 "/debug/environment" to EnvironmentHTMLHandler,
                 "/api/debug/environment" to EnvironmentAPIHandler

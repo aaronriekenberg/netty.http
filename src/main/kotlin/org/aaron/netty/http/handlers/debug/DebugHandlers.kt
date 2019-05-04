@@ -4,6 +4,6 @@ import org.aaron.netty.http.handlers.HandlerMap
 
 fun debugHandlerMap(): HandlerMap {
     val list =
-            createConfigHandlers() + createEnvironmentHandlers() + createGCHandlers() + createMemoryHandlers() + createThreadHandlers()
+            configHandlers() + environmentHandlers() + gcHandlers() + memoryHandlers() + threadHandlers()
     return list.toMap()
 }

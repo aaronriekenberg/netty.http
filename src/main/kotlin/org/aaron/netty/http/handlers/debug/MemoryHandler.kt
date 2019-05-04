@@ -16,7 +16,7 @@ import java.lang.management.MemoryUsage
 
 private val logger = KotlinLogging.logger {}
 
-fun createMemoryHandlers(): HandlerPairList =
+fun memoryHandlers(): HandlerPairList =
         listOf(
                 "/debug/memory" to MemoryHTMLHandler,
                 "/api/debug/memory" to MemoryAPIHandler

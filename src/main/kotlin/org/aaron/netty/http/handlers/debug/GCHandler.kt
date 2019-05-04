@@ -14,7 +14,7 @@ import java.lang.management.ManagementFactory
 
 private val logger = KotlinLogging.logger {}
 
-fun createGCHandlers(): HandlerPairList =
+fun gcHandlers(): HandlerPairList =
         listOf(
                 "/debug/gc" to GCHTMLHandler,
                 "/api/debug/gc" to GCAPIHandler

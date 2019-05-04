@@ -9,7 +9,7 @@ import org.aaron.netty.http.netty.RequestContext
 import org.aaron.netty.http.netty.sendJSONResponseOK
 import org.aaron.netty.http.templates.HandlebarsContainer
 
-fun createConfigHandlers(): HandlerPairList =
+fun configHandlers(): HandlerPairList =
         listOf(
                 "/debug/config" to ConfigHTMLHandler,
                 "/api/debug/config" to ConfigAPIHandler

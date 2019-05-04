@@ -14,7 +14,7 @@ import java.lang.management.ThreadInfo
 
 private val logger = KotlinLogging.logger {}
 
-fun createThreadHandlers(): HandlerPairList =
+fun threadHandlers(): HandlerPairList =
         listOf(
                 "/debug/thread" to ThreadHTMLHandler,
                 "/api/debug/thread" to ThreadAPIHandler
