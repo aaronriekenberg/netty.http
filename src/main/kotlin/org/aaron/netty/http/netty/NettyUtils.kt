@@ -47,6 +47,7 @@ data class RequestContext(
         val requestHeaders: HttpHeaders,
         val protocolVersion: HttpVersion,
         val keepAlive: Boolean,
+        val requestsForChannel: Int,
         val startTime: Instant
 )
 
@@ -267,10 +268,9 @@ fun ChannelHandlerContext.setHasSentHttpResponse() {
 
 private val HTTP_REQUESTS_FOR_CHANNEL: AttributeKey<Int> = AttributeKey.valueOf("httpRequestsForChannel")
 
-fun ChannelHandlerContext.getHttpRequestsForChannel(): Int {
-    return channel().attr(HTTP_REQUESTS_FOR_CHANNEL).get() ?: 0
-}
-
-fun ChannelHandlerContext.incrementHttpRequestsForChannel() {
-    channel().attr(HTTP_REQUESTS_FOR_CHANNEL).set(getHttpRequestsForChannel() + 1)
+fun ChannelHandlerContext.incrementAndGetHttpRequestsForChannel(): Int {
+    val attr = channel().attr(HTTP_REQUESTS_FOR_CHANNEL)
+    val requests = (attr.get() ?: 0) + 1
+    attr.set(requests)
+    return requests
 }
