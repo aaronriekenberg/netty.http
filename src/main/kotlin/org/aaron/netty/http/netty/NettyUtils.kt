@@ -264,3 +264,13 @@ fun ChannelHandlerContext.clearHasSentHttpResponse() {
 fun ChannelHandlerContext.setHasSentHttpResponse() {
     channel().attr(HTTP_RESPONSE_SENT_ATTRIBUTE_KEY).set(true)
 }
+
+private val HTTP_REQUESTS_FOR_CHANNEL: AttributeKey<Int> = AttributeKey.valueOf("httpRequestsForChannel")
+
+fun ChannelHandlerContext.getHttpRequestsForChannel(): Int {
+    return channel().attr(HTTP_REQUESTS_FOR_CHANNEL).get() ?: 0
+}
+
+fun ChannelHandlerContext.incrementHttpRequestsForChannel() {
+    channel().attr(HTTP_REQUESTS_FOR_CHANNEL).set(getHttpRequestsForChannel() + 1)
+}

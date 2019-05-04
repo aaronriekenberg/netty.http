@@ -44,6 +44,8 @@ private class HttpServerHandler(
 
         ctx.clearHasSentHttpResponse()
 
+        ctx.incrementHttpRequestsForChannel()
+
         logger.debug { "channelRead0 request=$request" }
 
         val requestContext = RequestContext(
