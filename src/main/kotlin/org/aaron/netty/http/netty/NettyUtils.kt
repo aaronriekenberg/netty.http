@@ -282,19 +282,23 @@ fun ChannelHandlerContext.setInHttpRequest() {
     channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).set(true)
 }
 
+fun Channel.isInHttpRequest(): Boolean {
+    return attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).get() ?: false
+}
+
 fun ChannelHandlerContext.clearInHttpRequest() {
     channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).set(false)
 }
 
-val HTTP_REQUESTS_FOR_CHANNEL_ATTRIBUTE_KEY: AttributeKey<Int> = AttributeKey.valueOf("org.aaron.netty.http.netty.httpRequestsForChannel")
+val HTTP_REQUESTS_ATTRIBUTE_KEY: AttributeKey<Int> = AttributeKey.valueOf("org.aaron.netty.http.netty.httpRequests")
 
-fun ChannelHandlerContext.incrementAndGetHttpRequestsForChannel(): Int {
-    val attr = channel().attr(HTTP_REQUESTS_FOR_CHANNEL_ATTRIBUTE_KEY)
+fun ChannelHandlerContext.incrementAndGetHttpRequests(): Int {
+    val attr = channel().attr(HTTP_REQUESTS_ATTRIBUTE_KEY)
     val requests = (attr.get() ?: 0) + 1
     attr.set(requests)
     return requests
 }
 
-fun Channel.getHttpRequestsForChannel(): Int {
-    return attr(HTTP_REQUESTS_FOR_CHANNEL_ATTRIBUTE_KEY).get() ?: 0
+fun Channel.getHttpRequests(): Int {
+    return attr(HTTP_REQUESTS_ATTRIBUTE_KEY).get() ?: 0
 }

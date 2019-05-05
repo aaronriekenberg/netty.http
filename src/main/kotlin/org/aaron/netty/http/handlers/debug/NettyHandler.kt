@@ -39,21 +39,27 @@ private data class NettyClientChannelResponse(
         val activeDuration: String,
 
         @field:JsonProperty("http_requests")
-        val httpRequests: Int
+        val httpRequests: Int,
+
+        @field:JsonProperty("in_http_request")
+        val inHttpRequest: Boolean
 
 )
 
 private const val UNKNOWN_STRING = "UNKNOWN"
 
-private fun Channel.toNettyClientChannelResponse(): NettyClientChannelResponse =
-        NettyClientChannelResponse(
-                id = id()?.asLongText() ?: UNKNOWN_STRING,
-                remoteAddress = remoteAddress()?.toString() ?: UNKNOWN_STRING,
-                localAddress = localAddress()?.toString() ?: UNKNOWN_STRING,
-                activeTime = getChannelActiveTime()?.toOffsetDateTime()?.toString() ?: UNKNOWN_STRING,
-                activeDuration = getChannelActiveTime()?.getDeltaTimeSinceSecondsString()?.plus("s") ?: UNKNOWN_STRING,
-                httpRequests = getHttpRequestsForChannel()
-        )
+private fun Channel.toNettyClientChannelResponse(): NettyClientChannelResponse {
+    val channelActiveTime = getChannelActiveTime()
+    return NettyClientChannelResponse(
+            id = id()?.asLongText() ?: UNKNOWN_STRING,
+            remoteAddress = remoteAddress()?.toString() ?: UNKNOWN_STRING,
+            localAddress = localAddress()?.toString() ?: UNKNOWN_STRING,
+            activeTime = channelActiveTime?.toOffsetDateTime()?.toString() ?: UNKNOWN_STRING,
+            activeDuration = channelActiveTime?.getDeltaTimeSinceSecondsString()?.plus("s") ?: UNKNOWN_STRING,
+            httpRequests = getHttpRequests(),
+            inHttpRequest = isInHttpRequest()
+    )
+}
 
 private data class NettyHandlerResponse(
 

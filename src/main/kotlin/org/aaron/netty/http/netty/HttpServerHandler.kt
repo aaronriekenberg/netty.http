@@ -59,7 +59,7 @@ private class HttpServerHandler(
                 requestHeaders = request.headers().copy(),
                 protocolVersion = request.protocolVersion(),
                 keepAlive = HttpUtil.isKeepAlive(request),
-                requestsForChannel = ctx.incrementAndGetHttpRequestsForChannel(),
+                requestsForChannel = ctx.incrementAndGetHttpRequests(),
                 startTime = startTime
         )
 
