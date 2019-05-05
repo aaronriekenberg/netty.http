@@ -272,7 +272,7 @@ fun Channel.getChannelActiveTime(): Instant? {
     return attr(CHANNEL_ACTIVE_TIME_ATTRIBUTE_KEY).get()
 }
 
-val IN_HTTP_REQUEST_ATTRIBUTE_KEY: AttributeKey<Boolean> = AttributeKey.valueOf("org.aaron.netty.http.netty.inHttpRequest")
+private val IN_HTTP_REQUEST_ATTRIBUTE_KEY: AttributeKey<Boolean> = AttributeKey.valueOf("org.aaron.netty.http.netty.inHttpRequest")
 
 fun ChannelHandlerContext.isInHttpRequest(): Boolean {
     return channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).get() ?: false
@@ -290,7 +290,7 @@ fun ChannelHandlerContext.clearInHttpRequest() {
     channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).set(false)
 }
 
-val HTTP_REQUESTS_ATTRIBUTE_KEY: AttributeKey<Int> = AttributeKey.valueOf("org.aaron.netty.http.netty.httpRequests")
+private val HTTP_REQUESTS_ATTRIBUTE_KEY: AttributeKey<Int> = AttributeKey.valueOf("org.aaron.netty.http.netty.httpRequests")
 
 fun ChannelHandlerContext.incrementAndGetHttpRequests(): Int {
     val attr = channel().attr(HTTP_REQUESTS_ATTRIBUTE_KEY)
