@@ -1,6 +1,5 @@
 package org.aaron.netty.http.logging
 
-import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponse
 import mu.KotlinLogging
@@ -11,13 +10,9 @@ private val logger = KotlinLogging.logger {}
 
 object HttpRequestLogger {
 
-    private fun formatRemoteAddress(ctx: ChannelHandlerContext): String {
-        val remoteAddress = ctx.channel()?.remoteAddress()
-        return if (remoteAddress != null) {
-            remoteAddress.toString()
-        } else {
-            "UNKNOWN"
-        }
+    private fun formatRemoteAddress(requestContext: RequestContext): String {
+        val remoteAddressString = requestContext.ctx.channel()?.remoteAddress()?.toString() ?: "UNKNOWN"
+        return "$remoteAddressString[${requestContext.requestsForChannel}]"
     }
 
     fun log(requestContext: RequestContext? = null, response: HttpResponse) {
@@ -25,7 +20,7 @@ object HttpRequestLogger {
             logger.info { "status=${response.status()?.code()} len=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)}" }
         } else {
             val deltaTimeString = requestContext.startTime.getDeltaTimeSinceSecondsString()
-            logger.info { "${formatRemoteAddress(requestContext.ctx)} ${requestContext.requestMethod} ${requestContext.requestUri} ${response.protocolVersion()} status=${response.status()?.code()} len=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)} chanReq=${requestContext.requestsForChannel} delta=${deltaTimeString}s" }
+            logger.info { "${formatRemoteAddress(requestContext)} ${requestContext.requestMethod} ${requestContext.requestUri} ${response.protocolVersion()} status=${response.status()?.code()} len=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)} delta=${deltaTimeString}s" }
         }
     }
 
