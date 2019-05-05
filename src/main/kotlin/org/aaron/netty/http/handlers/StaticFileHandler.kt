@@ -124,7 +124,7 @@ private class NonClasspathStaticFileHandler(
         // Write the initial line and the header.
         HttpRequestLogger.log(requestContext, response)
 
-        ctx.setHasSentHttpResponse()
+        ctx.clearInHttpRequest()
         ctx.write(response)
 
         // Write the content.

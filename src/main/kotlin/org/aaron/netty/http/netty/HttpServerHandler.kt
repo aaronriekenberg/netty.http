@@ -38,11 +38,17 @@ class HttpServerInitializer(
 private class HttpServerHandler(
         private val handlerMap: HandlerMap) : SimpleChannelInboundHandler<FullHttpRequest>() {
 
-    public override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
+    override fun channelActive(ctx: ChannelHandlerContext) {
+        ctx.setChannelActiveTime()
+
+        ClientChannelGroupContainer.clientChannelGroup.add(ctx.channel())
+    }
+
+    override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
 
         val startTime = Instant.now()
 
-        ctx.clearHasSentHttpResponse()
+        ctx.setInHttpRequest()
 
         logger.debug { "channelRead0 request=$request" }
 
@@ -80,7 +86,7 @@ private class HttpServerHandler(
 
         logger.debug(cause) { "exceptionCaught ctx=$ctx" }
 
-        if (ctx.channel().isActive && (!ctx.hasSentHttpResponse())) {
+        if (ctx.channel().isActive && ctx.isInHttpRequest()) {
             ctx.sendError(HttpResponseStatus.INTERNAL_SERVER_ERROR)
         } else {
             ctx.close()
