@@ -11,9 +11,9 @@ import org.aaron.netty.http.handlers.IndexHandler
 import org.aaron.netty.http.handlers.createHandlersForCommand
 import org.aaron.netty.http.handlers.debug.debugHandlerMap
 import org.aaron.netty.http.handlers.newStaticFileHandler
-import org.aaron.netty.http.netty.HttpServerInitializer
-import org.aaron.netty.http.netty.createEventLoopGroup
-import org.aaron.netty.http.netty.serverSocketChannelClass
+import org.aaron.netty.http.server.HttpServerInitializer
+import org.aaron.netty.http.server.createEventLoopGroup
+import org.aaron.netty.http.server.serverSocketChannelClass
 import org.aaron.netty.http.utils.getDeltaTimeSinceSecondsString
 import java.time.Instant
 

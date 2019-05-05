@@ -3,7 +3,7 @@ package org.aaron.netty.http.logging
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponse
 import mu.KotlinLogging
-import org.aaron.netty.http.netty.RequestContext
+import org.aaron.netty.http.server.RequestContext
 import org.aaron.netty.http.utils.getDeltaTimeSinceSecondsString
 
 private val logger = KotlinLogging.logger {}

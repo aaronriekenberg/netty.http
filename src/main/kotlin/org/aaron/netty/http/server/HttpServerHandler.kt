@@ -1,4 +1,4 @@
-package org.aaron.netty.http.netty
+package org.aaron.netty.http.server
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer

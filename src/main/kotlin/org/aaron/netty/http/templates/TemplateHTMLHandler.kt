@@ -3,7 +3,7 @@ package org.aaron.netty.http.templates
 import io.netty.handler.codec.http.DefaultFullHttpResponse
 import io.netty.handler.codec.http.HttpResponseStatus
 import org.aaron.netty.http.handlers.RespondIfNotModifiedHandler
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.server.*
 
 abstract class TemplateHTMLHandler(
         templateName: String,

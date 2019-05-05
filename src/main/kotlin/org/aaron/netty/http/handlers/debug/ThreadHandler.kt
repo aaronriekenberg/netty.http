@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.aaron.netty.http.handlers.Handler
 import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.RequestContext
-import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.server.RequestContext
+import org.aaron.netty.http.server.sendJSONResponseOK
 import org.aaron.netty.http.templates.TemplateHTMLHandler
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo

@@ -1,10 +1,8 @@
 package org.aaron.netty.http.handlers
 
-import com.github.jknack.handlebars.Template
-import io.netty.handler.codec.http.DefaultFullHttpResponse
-import io.netty.handler.codec.http.HttpResponseStatus
 import org.aaron.netty.http.environment.EnvironmentContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.server.RequestContext
+import org.aaron.netty.http.server.respondIfNotModified
 import java.time.Instant
 
 typealias HandlerPairList = List<Pair<String, Handler>>

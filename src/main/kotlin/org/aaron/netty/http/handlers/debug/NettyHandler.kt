@@ -5,7 +5,7 @@ import io.netty.channel.Channel
 import org.aaron.netty.http.handlers.Handler
 import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.*
+import org.aaron.netty.http.server.*
 import org.aaron.netty.http.templates.TemplateHTMLHandler
 import org.aaron.netty.http.utils.getDeltaTimeSinceSecondsString
 import org.aaron.netty.http.utils.toOffsetDateTime

@@ -1,4 +1,4 @@
-package org.aaron.netty.http.netty
+package org.aaron.netty.http.server
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

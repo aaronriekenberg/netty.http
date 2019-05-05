@@ -1,4 +1,4 @@
-package org.aaron.netty.http.netty
+package org.aaron.netty.http.server
 
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
@@ -262,7 +262,7 @@ private fun HttpResponseStatus.dropsConnection(): Boolean =
             else -> false
         }
 
-private val CHANNEL_ACTIVE_TIME_ATTRIBUTE_KEY: AttributeKey<Instant> = AttributeKey.valueOf("org.aaron.netty.http.netty.channelActiveTime")
+private val CHANNEL_ACTIVE_TIME_ATTRIBUTE_KEY: AttributeKey<Instant> = AttributeKey.valueOf("org.aaron.netty.http.server.channelActiveTime")
 
 fun ChannelHandlerContext.setChannelActiveTime() {
     channel().attr(CHANNEL_ACTIVE_TIME_ATTRIBUTE_KEY).set(Instant.now())
@@ -272,7 +272,7 @@ fun Channel.getChannelActiveTime(): Instant? {
     return attr(CHANNEL_ACTIVE_TIME_ATTRIBUTE_KEY).get()
 }
 
-private val IN_HTTP_REQUEST_ATTRIBUTE_KEY: AttributeKey<Boolean> = AttributeKey.valueOf("org.aaron.netty.http.netty.inHttpRequest")
+private val IN_HTTP_REQUEST_ATTRIBUTE_KEY: AttributeKey<Boolean> = AttributeKey.valueOf("org.aaron.netty.http.server.inHttpRequest")
 
 fun ChannelHandlerContext.isInHttpRequest(): Boolean {
     return channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).get() ?: false
@@ -290,7 +290,7 @@ fun ChannelHandlerContext.clearInHttpRequest() {
     channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).set(false)
 }
 
-private val HTTP_REQUESTS_ATTRIBUTE_KEY: AttributeKey<Int> = AttributeKey.valueOf("org.aaron.netty.http.netty.httpRequests")
+private val HTTP_REQUESTS_ATTRIBUTE_KEY: AttributeKey<Int> = AttributeKey.valueOf("org.aaron.netty.http.server.httpRequests")
 
 fun ChannelHandlerContext.incrementAndGetHttpRequests(): Int {
     val attr = channel().attr(HTTP_REQUESTS_ATTRIBUTE_KEY)

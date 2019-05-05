@@ -5,10 +5,10 @@ import io.netty.handler.codec.http.HttpResponseStatus
 import mu.KotlinLogging
 import org.aaron.netty.http.config.CommandInfo
 import org.aaron.netty.http.json.ObjectMapperContainer
-import org.aaron.netty.http.netty.BlockingThreadPoolContainer
-import org.aaron.netty.http.netty.RequestContext
-import org.aaron.netty.http.netty.sendError
-import org.aaron.netty.http.netty.sendJSONResponseOK
+import org.aaron.netty.http.server.BlockingThreadPoolContainer
+import org.aaron.netty.http.server.RequestContext
+import org.aaron.netty.http.server.sendError
+import org.aaron.netty.http.server.sendJSONResponseOK
 import org.aaron.netty.http.templates.TemplateHTMLHandler
 import java.io.InputStreamReader
 
