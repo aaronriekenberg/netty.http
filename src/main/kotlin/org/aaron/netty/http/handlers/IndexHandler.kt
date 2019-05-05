@@ -2,12 +2,12 @@ package org.aaron.netty.http.handlers
 
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.environment.EnvironmentContainer
-import org.aaron.netty.http.templates.HandlebarsContainer
+import org.aaron.netty.http.templates.TemplateHTMLHandler
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
 object IndexHandler : TemplateHTMLHandler(
-        template = HandlebarsContainer.handlebars.compile("index"),
+        templateName = "index",
         templateData = mapOf(
                 "mainPageInfo" to ConfigContainer.config.mainPageInfo,
                 "commandInfo" to ConfigContainer.config.commandInfo,

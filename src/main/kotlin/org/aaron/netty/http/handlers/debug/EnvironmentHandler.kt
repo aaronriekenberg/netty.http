@@ -3,11 +3,10 @@ package org.aaron.netty.http.handlers.debug
 import org.aaron.netty.http.environment.EnvironmentContainer
 import org.aaron.netty.http.handlers.Handler
 import org.aaron.netty.http.handlers.HandlerPairList
-import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.RequestContext
 import org.aaron.netty.http.netty.sendJSONResponseOK
-import org.aaron.netty.http.templates.HandlebarsContainer
+import org.aaron.netty.http.templates.TemplateHTMLHandler
 
 fun environmentHandlers(): HandlerPairList =
         listOf(
@@ -16,7 +15,7 @@ fun environmentHandlers(): HandlerPairList =
         )
 
 private object EnvironmentHTMLHandler : TemplateHTMLHandler(
-        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateName = "debug",
         templateData = mapOf("id" to "environment"))
 
 private object EnvironmentAPIHandler : Handler {

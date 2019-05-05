@@ -9,7 +9,7 @@ import org.aaron.netty.http.netty.BlockingThreadPoolContainer
 import org.aaron.netty.http.netty.RequestContext
 import org.aaron.netty.http.netty.sendError
 import org.aaron.netty.http.netty.sendJSONResponseOK
-import org.aaron.netty.http.templates.HandlebarsContainer
+import org.aaron.netty.http.templates.TemplateHTMLHandler
 import java.io.InputStreamReader
 
 private val logger = KotlinLogging.logger {}
@@ -21,7 +21,7 @@ fun createHandlersForCommand(commandInfo: CommandInfo): HandlerPairList =
         )
 
 private class CommandHTMLHandler(commandInfo: CommandInfo) : TemplateHTMLHandler(
-        template = HandlebarsContainer.handlebars.compile("command"),
+        templateName = "command",
         templateData = mapOf("commandInfo" to commandInfo))
 
 private class CommandAPIHandler(private val commandInfo: CommandInfo) : Handler {

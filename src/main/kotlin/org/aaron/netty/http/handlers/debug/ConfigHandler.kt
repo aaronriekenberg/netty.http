@@ -3,11 +3,10 @@ package org.aaron.netty.http.handlers.debug
 import org.aaron.netty.http.config.ConfigContainer
 import org.aaron.netty.http.handlers.Handler
 import org.aaron.netty.http.handlers.HandlerPairList
-import org.aaron.netty.http.handlers.TemplateHTMLHandler
 import org.aaron.netty.http.json.ObjectMapperContainer
 import org.aaron.netty.http.netty.RequestContext
 import org.aaron.netty.http.netty.sendJSONResponseOK
-import org.aaron.netty.http.templates.HandlebarsContainer
+import org.aaron.netty.http.templates.TemplateHTMLHandler
 
 fun configHandlers(): HandlerPairList =
         listOf(
@@ -16,7 +15,7 @@ fun configHandlers(): HandlerPairList =
         )
 
 private object ConfigHTMLHandler : TemplateHTMLHandler(
-        template = HandlebarsContainer.handlebars.compile("debug"),
+        templateName = "debug",
         templateData = mapOf("id" to "config"))
 
 private object ConfigAPIHandler : Handler {
