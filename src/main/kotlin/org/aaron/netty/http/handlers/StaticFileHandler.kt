@@ -59,7 +59,7 @@ private class NonClasspathStaticFileHandler(
         private val filePath: String,
         contentType: String) : Handler {
 
-    private val contentType = AsciiString.cached(contentType)
+    private val contentType = AsciiString.cached(contentType)!!
 
     private val blockingThreadPool = BlockingThreadPoolContainer.blockingThreadPool
 
