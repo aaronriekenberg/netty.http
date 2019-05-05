@@ -4,6 +4,7 @@ import io.netty.channel.*
 import io.netty.handler.codec.http.*
 import io.netty.handler.ssl.SslHandler
 import io.netty.handler.stream.ChunkedFile
+import io.netty.util.AsciiString
 import mu.KotlinLogging
 import org.aaron.netty.http.config.StaticFileInfo
 import org.aaron.netty.http.logging.HttpRequestLogger
@@ -44,7 +45,7 @@ private class ClasspathStaticFileHandler(
 
         response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, fileBuffer)
 
-        response.setContentTypeHeader(contentType)
+        response.setContentTypeHeader(AsciiString.of(contentType))
         response.setCacheControlHeader()
         response.setLastModifiedHeader(lastModified)
     }
@@ -56,7 +57,9 @@ private class ClasspathStaticFileHandler(
 
 private class NonClasspathStaticFileHandler(
         private val filePath: String,
-        private val contentType: String) : Handler {
+        contentType: String) : Handler {
+
+    private val contentType = AsciiString.cached(contentType)
 
     private val blockingThreadPool = BlockingThreadPoolContainer.blockingThreadPool
 

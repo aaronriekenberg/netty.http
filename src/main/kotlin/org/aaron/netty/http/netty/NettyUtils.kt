@@ -14,6 +14,7 @@ import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.ServerSocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.http.*
+import io.netty.util.AsciiString
 import io.netty.util.AttributeKey
 import io.netty.util.CharsetUtil
 import mu.KotlinLogging
@@ -225,11 +226,11 @@ fun HttpResponse.setCacheControlHeader(value: String = "private, max-age=$HTTP_C
     headers().set(HttpHeaderNames.CACHE_CONTROL, value)
 }
 
-const val CONTENT_TYPE_APPLICATION_JSON = "application/json; charset=UTF-8"
-const val CONTENT_TYPE_TEXT_PLAIN = "text/plain; charset=UTF-8"
-const val CONTENT_TYPE_TEXT_HTML = "text/html; charset=UTF-8"
+val CONTENT_TYPE_APPLICATION_JSON = AsciiString.cached("application/json; charset=UTF-8")!!
+val CONTENT_TYPE_TEXT_PLAIN = AsciiString.cached("text/plain; charset=UTF-8")!!
+val CONTENT_TYPE_TEXT_HTML = AsciiString.cached("text/html; charset=UTF-8")!!
 
-fun HttpResponse.setContentTypeHeader(value: String) {
+fun HttpResponse.setContentTypeHeader(value: AsciiString) {
     headers().set(HttpHeaderNames.CONTENT_TYPE, value)
 }
 
