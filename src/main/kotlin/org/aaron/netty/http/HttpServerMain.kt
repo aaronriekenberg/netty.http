@@ -61,7 +61,7 @@ object HttpServerMain {
                     .sync().channel()
 
             logger.info {
-                "server started on ${serverChannel.localAddress()} in ${runStartTime.getDeltaTimeSinceSecondsString()}s"
+                "server started on ${serverChannel.localAddress()} in ${runStartTime.getDeltaTimeSinceSecondsString()}"
             }
 
             serverChannel.closeFuture().sync()

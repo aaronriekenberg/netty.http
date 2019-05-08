@@ -48,14 +48,14 @@ private data class NettyClientChannelResponse(
 
 private const val UNKNOWN_STRING = "UNKNOWN"
 
-private fun Channel.toNettyClientChannelResponse(): NettyClientChannelResponse {
+private fun Channel.toNettyClientChannelResponse(now: Instant): NettyClientChannelResponse {
     val channelActiveTime = getChannelActiveTime()
     return NettyClientChannelResponse(
             id = id()?.asLongText() ?: UNKNOWN_STRING,
             remoteAddress = remoteAddress()?.toString() ?: UNKNOWN_STRING,
             localAddress = localAddress()?.toString() ?: UNKNOWN_STRING,
             activeTime = channelActiveTime?.toOffsetDateTime()?.toString() ?: UNKNOWN_STRING,
-            activeDuration = channelActiveTime?.getDeltaTimeSinceSecondsString()?.plus("s") ?: UNKNOWN_STRING,
+            activeDuration = channelActiveTime?.getDeltaTimeSinceSecondsString(now = now) ?: UNKNOWN_STRING,
             httpRequests = getHttpRequests(),
             inHttpRequest = isInHttpRequest()
     )
@@ -65,6 +65,7 @@ private data class NettyHandlerResponse(
 
         @field:JsonProperty("client_channels")
         val clientChannels: List<NettyClientChannelResponse>
+
 )
 
 private object NettyAPIHandler : Handler {
@@ -74,10 +75,11 @@ private object NettyAPIHandler : Handler {
     private val clientChannelGroup = ClientChannelGroupContainer.clientChannelGroup
 
     override fun handle(requestContext: RequestContext) {
+        val now = Instant.now()
         val nettyHandlerResponse = NettyHandlerResponse(
                 clientChannels = clientChannelGroup
                         .sortedBy { it.getChannelActiveTime() ?: Instant.EPOCH }
-                        .map { it.toNettyClientChannelResponse() }
+                        .map { it.toNettyClientChannelResponse(now) }
         )
 
         val json = objectMapper.writeValueAsString(nettyHandlerResponse)
