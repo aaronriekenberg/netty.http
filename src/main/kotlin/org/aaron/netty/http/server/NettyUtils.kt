@@ -274,12 +274,12 @@ fun Channel.getChannelActiveTime(): Instant? {
 
 private val IN_HTTP_REQUEST_ATTRIBUTE_KEY: AttributeKey<Boolean> = AttributeKey.valueOf("org.aaron.netty.http.server.inHttpRequest")
 
-fun ChannelHandlerContext.isInHttpRequest(): Boolean {
-    return channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).get() ?: false
-}
-
 fun ChannelHandlerContext.setInHttpRequest() {
     channel().attr(IN_HTTP_REQUEST_ATTRIBUTE_KEY).set(true)
+}
+
+fun ChannelHandlerContext.isInHttpRequest(): Boolean {
+    return channel().isInHttpRequest()
 }
 
 fun Channel.isInHttpRequest(): Boolean {
