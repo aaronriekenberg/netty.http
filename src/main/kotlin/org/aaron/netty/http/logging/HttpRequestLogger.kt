@@ -20,7 +20,7 @@ object HttpRequestLogger {
             logger.info { "status=${response.status()?.code()} len=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)}" }
         } else {
             val deltaTimeString = requestContext.startTime.getDeltaTimeSinceSecondsString()
-            logger.info { "${formatRemoteAddress(requestContext)} ${requestContext.requestMethod} ${requestContext.requestUri} ${response.protocolVersion()} status=${response.status()?.code()} len=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)} delta=${deltaTimeString}" }
+            logger.info { "${formatRemoteAddress(requestContext)} ${requestContext.requestMethod} ${requestContext.requestUri} ${response.protocolVersion()} status=${response.status()?.code()} len=${response.headers().get(HttpHeaderNames.CONTENT_LENGTH)} delta=$deltaTimeString" }
         }
     }
 
