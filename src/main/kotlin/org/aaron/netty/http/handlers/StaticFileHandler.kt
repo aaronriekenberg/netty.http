@@ -82,8 +82,6 @@ private class NonClasspathStaticFileHandler(
 
         val file = File(filePath)
 
-        val ctx = requestContext.ctx
-
         if (file.isHidden || !file.exists()) {
             requestContext.sendError(HttpResponseStatus.NOT_FOUND)
             return
@@ -120,6 +118,8 @@ private class NonClasspathStaticFileHandler(
         if (!requestContext.keepAlive) {
             response.setConnectionCloseHeader()
         }
+
+        val ctx = requestContext.ctx
 
         // Write the initial line and the header.
         HttpRequestLogger.log(requestContext, response)
