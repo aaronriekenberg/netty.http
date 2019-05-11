@@ -51,7 +51,7 @@ private const val UNKNOWN_STRING = "UNKNOWN"
 private fun Channel.toNettyClientChannelResponse(now: Instant): NettyClientChannelResponse {
     val channelActiveTime = getChannelActiveTime()
     return NettyClientChannelResponse(
-            id = id().asLongText(),
+            id = id()?.asLongText() ?: UNKNOWN_STRING,
             remoteAddress = remoteAddress()?.toString() ?: UNKNOWN_STRING,
             localAddress = localAddress()?.toString() ?: UNKNOWN_STRING,
             activeTime = channelActiveTime?.toOffsetDateTime()?.toString() ?: UNKNOWN_STRING,
