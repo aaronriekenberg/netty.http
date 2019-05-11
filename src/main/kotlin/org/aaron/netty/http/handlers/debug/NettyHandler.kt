@@ -2,6 +2,7 @@ package org.aaron.netty.http.handlers.debug
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.netty.channel.Channel
+import io.netty.channel.SingleThreadEventLoop
 import org.aaron.netty.http.handlers.Handler
 import org.aaron.netty.http.handlers.HandlerPairList
 import org.aaron.netty.http.json.ObjectMapperContainer
@@ -25,6 +26,9 @@ private data class NettyClientChannelResponse(
 
         @field:JsonProperty("id")
         val id: String,
+
+        @field:JsonProperty("event_loop_thread_name")
+        val eventLoopThreadName: String,
 
         @field:JsonProperty("remote_address")
         val remoteAddress: String,
@@ -50,8 +54,11 @@ private const val UNKNOWN_STRING = "UNKNOWN"
 
 private fun Channel.toNettyClientChannelResponse(now: Instant): NettyClientChannelResponse {
     val channelActiveTime = getChannelActiveTime()
+
     return NettyClientChannelResponse(
             id = id()?.asLongText() ?: UNKNOWN_STRING,
+            eventLoopThreadName = (this.eventLoop() as? SingleThreadEventLoop)?.threadProperties()?.name()
+                    ?: UNKNOWN_STRING,
             remoteAddress = remoteAddress()?.toString() ?: UNKNOWN_STRING,
             localAddress = localAddress()?.toString() ?: UNKNOWN_STRING,
             activeTime = channelActiveTime?.toOffsetDateTime()?.toString() ?: UNKNOWN_STRING,
