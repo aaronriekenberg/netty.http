@@ -119,6 +119,8 @@ private class NonClasspathStaticFileHandler(
 
         if (!requestContext.keepAlive) {
             response.setConnectionCloseHeader()
+        } else if (!response.protocolVersion().isKeepAliveDefault) {
+            response.setConnectionKeepAliveHeader()
         }
 
         // Write the initial line and the header.

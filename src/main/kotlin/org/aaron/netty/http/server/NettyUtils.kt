@@ -152,13 +152,15 @@ fun RequestContext.sendError(status: HttpResponseStatus) {
 
 private fun FullHttpResponse.setDefaultHeaders(keepAlive: Boolean) {
 
-    HttpUtil.setContentLength(this, content().readableBytes().toLong())
+    HttpUtil.setContentLength(this, content()?.readableBytes()?.toLong() ?: 0)
     setDateHeaderIfNotSet()
 
     if (!keepAlive) {
         // We're going to close the connection as soon as the response is sent,
         // so we should also make it clear for the client.
         setConnectionCloseHeader()
+    } else if (!protocolVersion().isKeepAliveDefault) {
+        setConnectionKeepAliveHeader()
     }
 }
 
@@ -245,6 +247,10 @@ fun HttpResponse.setContentTypeHeader(value: AsciiString) {
 
 fun HttpResponse.setConnectionCloseHeader() {
     headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+}
+
+fun HttpResponse.setConnectionKeepAliveHeader() {
+    headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
 }
 
 // copied from Tomcat
