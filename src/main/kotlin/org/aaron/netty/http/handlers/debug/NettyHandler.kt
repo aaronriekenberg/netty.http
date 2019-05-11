@@ -57,7 +57,7 @@ private fun Channel.toNettyClientChannelResponse(now: Instant): NettyClientChann
 
     return NettyClientChannelResponse(
             id = id()?.asLongText() ?: UNKNOWN_STRING,
-            eventLoopThreadName = (this.eventLoop() as? SingleThreadEventLoop)?.threadProperties()?.name()
+            eventLoopThreadName = (eventLoop() as? SingleThreadEventLoop)?.threadProperties()?.name()
                     ?: UNKNOWN_STRING,
             remoteAddress = remoteAddress()?.toString() ?: UNKNOWN_STRING,
             localAddress = localAddress()?.toString() ?: UNKNOWN_STRING,
