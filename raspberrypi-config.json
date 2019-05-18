@@ -114,6 +114,15 @@
       ]
     },
     {
+      "id": "node_dns_logs",
+      "description": "node dns logs",
+      "command": "tail",
+      "args": [
+        "-n30",
+        "/var/log/unifi/server.log"
+      ]
+    },
+    {
       "id": "ntpq",
       "description": "ntpq",
       "command": "ntpq",
