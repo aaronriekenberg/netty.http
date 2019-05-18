@@ -119,7 +119,7 @@
       "command": "tail",
       "args": [
         "-n30",
-        "/var/log/unifi/server.log"
+        "/home/pi/node-dns/logs/current"
       ]
     },
     {
