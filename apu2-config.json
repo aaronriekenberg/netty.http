@@ -34,62 +34,6 @@
       "classpath": true,
       "content_type": "image/x-icon",
       "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/index.html",
-      "file_path": "/var/www/htdocs/pfstat/index.html",
-      "classpath": false,
-      "content_type": "text/html",
-      "include_in_main_page": true
-    },
-    {
-      "url": "/pfstat/pfstat-packets-v4-1day.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-packets-v4-1day.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/pfstat-packets-v4-1hour.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-packets-v4-1hour.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/pfstat-packets-v4-7days.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-packets-v4-7days.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/pfstat-states-1day.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-states-1day.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/pfstat-v4-1day.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-v4-1day.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/pfstat-v4-1hour.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-v4-1hour.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
-    },
-    {
-      "url": "/pfstat/pfstat-v4-7days.png",
-      "file_path": "/var/www/htdocs/pfstat/pfstat-v4-7days.png",
-      "classpath": false,
-      "content_type": "image/png",
-      "include_in_main_page": false
     }
   ],
   "command_info": [
@@ -110,21 +54,23 @@
       ]
     },
     {
-      "id": "dhcp-lease-list",
-      "description": "dhcp lease list",
-      "command": "/home/aaron/dhcp-leases/show-leases.sh",
-      "args": []
-    },
-    {
       "id": "dmesg",
       "description": "dmesg",
-      "command": "dmesg",
-      "args": []
+      "command": "sudo",
+      "args": [
+        "dmesg"
+      ]
     },
     {
       "id": "ifconfig",
       "description": "ifconfig",
       "command": "/sbin/ifconfig",
+      "args": []
+    },
+    {
+      "id": "iwconfig",
+      "description": "iwconfig",
+      "command": "/sbin/iwconfig",
       "args": []
     },
     {
@@ -146,19 +92,17 @@
       ]
     },
     {
+      "id": "lscpu",
+      "description": "lscpu",
+      "command": "lscpu",
+      "args": []
+    },
+    {
       "id": "netstat_an",
       "description": "netstat -an",
       "command": "netstat",
       "args": [
         "-an"
-      ]
-    },
-    {
-      "id": "netstat_binh",
-      "description": "netstat -binh",
-      "command": "netstat",
-      "args": [
-        "-binh"
       ]
     },
     {
@@ -170,39 +114,36 @@
       ]
     },
     {
-      "id": "ntpctl",
-      "description": "ntpctl",
-      "command": "ntpctl",
+      "id": "node_dns_logs",
+      "description": "node dns logs",
+      "command": "tail",
       "args": [
-        "-sa"
+        "-n30",
+        "/home/aaron/node-dns/logs/current"
       ]
     },
     {
-      "id": "pfctl_si_v",
-      "description": "pfctl -si -v",
-      "command": "doas",
+      "id": "ntpq",
+      "description": "ntpq",
+      "command": "ntpq",
       "args": [
-        "/sbin/pfctl",
-        "-si",
-        "-v"
+        "-p"
       ]
     },
     {
-      "id": "pfctl_sq_v",
-      "description": "pfctl -sq -v",
-      "command": "doas",
-      "args": [
-        "/sbin/pfctl",
-        "-sq",
-        "-v"
-      ]
+      "id": "sensors",
+      "description": "sensors",
+      "command": "sensors",
+      "args": []
     },
     {
-      "id": "sysctl_hw",
-      "description": "sysctl hw",
-      "command": "sysctl",
+      "id": "tc_qdisc",
+      "description": "tc_qdisc",
+      "command": "/sbin/tc",
       "args": [
-        "hw"
+        "-s",
+        "qdisc",
+        "show"
       ]
     },
     {
@@ -210,7 +151,8 @@
       "description": "top",
       "command": "top",
       "args": [
-        "-b"
+        "-b",
+        "-n1"
       ]
     },
     {
