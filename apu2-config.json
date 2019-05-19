@@ -68,12 +68,6 @@
       "args": []
     },
     {
-      "id": "iwconfig",
-      "description": "iwconfig",
-      "command": "/sbin/iwconfig",
-      "args": []
-    },
-    {
       "id": "log_ls",
       "description": "log ls",
       "command": "ls",
