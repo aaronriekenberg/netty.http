@@ -34,6 +34,48 @@
       "classpath": true,
       "content_type": "image/x-icon",
       "include_in_main_page": false
+    },
+    {
+      "url": "/vnstat/index.html",
+      "file_path": "/home/aaron/vnstat/index.html",
+      "classpath": false,
+      "content_type": "text/html",
+      "include_in_main_page": true
+    },
+    {
+      "url": "/vnstat/vnstat_summary.png",
+      "file_path": "/home/aaron/vnstat/vnstat_summary.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/vnstat/vnstat_hours.png",
+      "file_path": "/home/aaron/vnstat/vnstat_hours.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/vnstat/vnstat_days.png",
+      "file_path": "/home/aaron/vnstat/vnstat_days.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/vnstat/vnstat_months.png",
+      "file_path": "/home/aaron/vnstat/vnstat_months.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
+    },
+    {
+      "url": "/vnstat/vnstat_top10.png",
+      "file_path": "/home/aaron/vnstat/vnstat_top10.png",
+      "classpath": false,
+      "content_type": "image/png",
+      "include_in_main_page": false
     }
   ],
   "command_info": [
@@ -51,6 +93,21 @@
       "command": "df",
       "args": [
         "-h"
+      ]
+    },
+    {
+      "id": "go_dhcp_leases",
+      "description": "go dhcp leases",
+      "command": "/home/aaron/go-dhcp-leases/run.sh",
+      "args": []
+    },
+    {
+      "id": "go_dns_proxy_log",
+      "description": "go dns proxy log",
+      "command": "tail",
+      "args": [
+        "-n30",
+        "/home/aaron/go-dns-proxy/logs/output"
       ]
     },
     {
@@ -82,7 +139,7 @@
       "command": "tail",
       "args": [
         "-n30",
-        "/home/aaron/netty.http/logs/current"
+        "/home/aaron/netty.http/logs/output"
       ]
     },
     {
@@ -113,7 +170,7 @@
       "command": "tail",
       "args": [
         "-n30",
-        "/home/aaron/node-dns/logs/current"
+        "/home/aaron/node-dns/logs/output"
       ]
     },
     {
