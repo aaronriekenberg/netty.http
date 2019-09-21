@@ -111,14 +111,6 @@
       ]
     },
     {
-      "id": "dmesg",
-      "description": "dmesg",
-      "command": "sudo",
-      "args": [
-        "dmesg"
-      ]
-    },
-    {
       "id": "ifconfig",
       "description": "ifconfig",
       "command": "/sbin/ifconfig",
