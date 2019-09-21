@@ -1,7 +1,6 @@
 package org.aaron.netty.http.templates
 
 import io.netty.handler.codec.http.DefaultFullHttpResponse
-import io.netty.handler.codec.http.HttpResponseStatus
 import org.aaron.netty.http.handlers.RespondIfNotModifiedHandler
 import org.aaron.netty.http.server.*
 
@@ -16,7 +15,7 @@ abstract class TemplateHTMLHandler(
         val template = HandlebarsContainer.handlebars.compile(templateName)
         val htmlString = template.apply(templateData)
 
-        response = newDefaultFullHttpResponse(DEFAULT_PROTOCOL_VERSION, HttpResponseStatus.OK, htmlString)
+        response = newDefaultFullHttpResponse(body = htmlString)
 
         response.setContentTypeHeader(CONTENT_TYPE_TEXT_HTML)
         response.setLastModifiedHeader(lastModified)

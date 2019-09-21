@@ -84,7 +84,7 @@ fun RequestContext.sendRetainedDuplicate(response: FullHttpResponse) {
             })
 }
 
-fun RequestContext.sendNotModified() {
+private fun RequestContext.sendNotModified() {
 
     val response = DefaultFullHttpResponse(
             protocolVersion,
@@ -196,8 +196,8 @@ private fun ChannelHandlerContext.sendResponseAndCleanupConnection(
 }
 
 fun newDefaultFullHttpResponse(
-        protocolVersion: HttpVersion,
-        status: HttpResponseStatus,
+        protocolVersion: HttpVersion = DEFAULT_PROTOCOL_VERSION,
+        status: HttpResponseStatus = HttpResponseStatus.OK,
         body: String) =
         DefaultFullHttpResponse(
                 protocolVersion,
@@ -205,8 +205,8 @@ fun newDefaultFullHttpResponse(
                 Unpooled.copiedBuffer(body, CharsetUtil.UTF_8))
 
 fun newDefaultFullHttpResponse(
-        protocolVersion: HttpVersion,
-        status: HttpResponseStatus,
+        protocolVersion: HttpVersion = DEFAULT_PROTOCOL_VERSION,
+        status: HttpResponseStatus = HttpResponseStatus.OK,
         body: ByteArray) =
         DefaultFullHttpResponse(
                 protocolVersion,
