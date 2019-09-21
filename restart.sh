@@ -14,4 +14,4 @@ fi
 
 export PATH="${HOME}/bin:$PATH"
 
-nohup java -Dconfig.file.name=$CONFIG_FILE $JAVA_OPTS -jar build/libs/*.jar 2>&1 | svlogd logs &
+nohup java -Dconfig.file.name=$CONFIG_FILE $JAVA_OPTS -jar build/libs/*.jar 2>&1 | simplerotate logs &
